@@ -3,6 +3,7 @@ import { Switch, Route } from 'react-router-dom'
 import { withStyles } from '@material-ui/core/styles'
 import EventPage from './EventPage/EventPage'
 import AppBar from './AppBar/AppBar'
+import LoginDialog from './LoginDialog/LoginDialog'
 import Navigation from './Navigation/Navigation'
 import withTheme from 'utilities/withTheme'
 
@@ -36,6 +37,7 @@ class App extends Component {
                     <div className={classes.toolbar}></div>
                     <Switch>
                         <Route path='/events' component={EventPage} />
+                        <Route path='/login' component={LoginDialog} />
                     </Switch>
 				</main>
 			</div>

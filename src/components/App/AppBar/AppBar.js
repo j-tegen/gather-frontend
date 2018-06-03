@@ -1,5 +1,6 @@
 import React from 'react'
 import { default as MuiAppBar } from '@material-ui/core/AppBar'
+import { Link, withRouter } from 'react-router-dom'
 import Toolbar from '@material-ui/core/Toolbar'
 import { withStyles } from '@material-ui/core/styles'
 import IconButton from '@material-ui/core/IconButton'
@@ -8,6 +9,7 @@ import Typography from '@material-ui/core/Typography'
 import AccountCircle from '@material-ui/icons/AccountCircle'
 import Menu from '@material-ui/core/Menu';
 import MenuItem from '@material-ui/core/MenuItem';
+
 
 
 const styles = theme => ({
@@ -41,6 +43,7 @@ class AppBar extends React.Component {
     }
 
     render() {
+
         const { classes, handleToggle, handleLogout } = this.props
         const { anchorEl } = this.state
         const open = Boolean(anchorEl)
@@ -82,7 +85,9 @@ class AppBar extends React.Component {
                             onClose={this.handleClose.bind(this)}
                         >
                             <MenuItem onClick={this.handleClose.bind(this)}>My profile</MenuItem>
-                            <MenuItem >Sign out</MenuItem>
+                            <Link to={{ pathname: '/login', state: { fromPath: this.props.location.pathname}}}  style={{ textDecoration: 'none', display: 'block' }}>
+                                <MenuItem >Sign in</MenuItem>
+                            </Link>
                         </Menu>
                     </div>
                 </Toolbar>
@@ -91,4 +96,4 @@ class AppBar extends React.Component {
     }
 }
 
-export default withStyles(styles)(AppBar)
+export default withRouter(withStyles(styles)(AppBar))
