@@ -6,7 +6,9 @@ module.exports = function override(config, env) {
         ["module-resolver", {
             "root": ["./src"],
             "alias": {
-                "utilities": "./src/utilities"
+                "utilities": "./src/utilities",
+                "settings": "./src/settings.js",
+                "env": "./src/env.js"
             }
         }],
         config,

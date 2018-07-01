@@ -7,8 +7,8 @@ import IconButton from '@material-ui/core/IconButton'
 import MenuIcon from '@material-ui/icons/Menu'
 import Typography from '@material-ui/core/Typography'
 import AccountCircle from '@material-ui/icons/AccountCircle'
-import Menu from '@material-ui/core/Menu';
-import MenuItem from '@material-ui/core/MenuItem';
+import Menu from '@material-ui/core/Menu'
+import MenuItem from '@material-ui/core/MenuItem'
 
 
 
@@ -42,9 +42,14 @@ class AppBar extends React.Component {
         this.setState({ anchorEl: null })
     }
 
+    signOut() {
+        localStorage.removeItem('session')
+        window.location.reload()
+    }
+
     render() {
 
-        const { classes, handleToggle, handleLogout } = this.props
+        const { classes, handleToggle, handleLogout, session } = this.props
         const { anchorEl } = this.state
         const open = Boolean(anchorEl)
         return (
@@ -85,9 +90,13 @@ class AppBar extends React.Component {
                             onClose={this.handleClose.bind(this)}
                         >
                             <MenuItem onClick={this.handleClose.bind(this)}>My profile</MenuItem>
-                            <Link to={{ pathname: '/login', state: { fromPath: this.props.location.pathname}}}  style={{ textDecoration: 'none', display: 'block' }}>
-                                <MenuItem >Sign in</MenuItem>
-                            </Link>
+                            {
+                                !session
+                                ? <Link to={{ pathname: '/login', state: { fromPath: this.props.location.pathname}}}  style={{ textDecoration: 'none', display: 'block' }}>
+                                    <MenuItem >Sign in</MenuItem>
+                                  </Link>
+                                : <MenuItem onClick={this.signOut.bind(this)}>Sign out</MenuItem>
+                            }
                         </Menu>
                     </div>
                 </Toolbar>

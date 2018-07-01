@@ -8,8 +8,8 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import DialogContent from '@material-ui/core/DialogContent'
 import Tabs from '@material-ui/core/Tabs'
 import Tab from '@material-ui/core/Tab'
-
 import withMobileDialog from '@material-ui/core/withMobileDialog'
+
 import EventDialogTitle from './EventDialogTitle/EventDialogTitle'
 import EventInfoTab from './EventInfoTab/EventInfoTab'
 import EventFeedTab from './EventFeedTab/EventFeedTab'
@@ -115,8 +115,13 @@ class EventDialog extends Component {
     }
 
     render() {
+        console.log(this.props)
         if (this.props.data && this.props.data.loading) {
-			return <Loader />
+            return (
+                <Dialog classes={{ paper: dialogPaper }} fullWidth maxWidth={'md'} fullScreen={this.props.fullScreen} open onClose={this.handleClose}>
+                    <Loader />
+                </Dialog>
+            )
 		}
 		if (this.props.data && this.props.data.error) {
 			return <div>Error...</div>
@@ -145,7 +150,6 @@ class EventDialog extends Component {
                 }
                 {tabIndex === 1 && <EventFeedTab event={event} />}
                 {tabIndex === 2 && <EventParticipantsTab event={event} />}
-                <EventSpeedDial hidden={this.state.hideSpeedDial} handleEdit={this.handleEdit} />
             </Dialog>
         )
     }

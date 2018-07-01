@@ -1,4 +1,4 @@
-export default function getDistanceLocations(fromLocation, toLocation) {
+export function getDistanceLocations(fromLocation, toLocation) {
     const R = 6371
     const dLat = deg2rad(toLocation.lat-fromLocation.lat)
     const dLng = deg2rad(toLocation.lng-fromLocation.lng)
@@ -20,6 +20,31 @@ export const getCenterLocations = (locations) => {
     })
 
     return { lat: center.latitude / locations.length, lng: center.longitude / locations.length }
+}
+
+export const getBounds = (locations) => {
+    const north = Math.max.apply(Math, locations.map(function (l) {
+        return l.latitude
+    }))
+    const south = Math.min.apply(Math, locations.map(function (l) {
+        return l.latitude;
+    }))
+    const west = Math.min.apply(Math, locations.map(function (l) {
+        return l.longitude;
+    }))
+    const east = Math.max.apply(Math, locations.map(function (l) {
+        return l.longitude;
+    }))
+    return {
+        nw: {
+            lat: north,
+            lng: west,
+        },
+        se: {
+            lat: south,
+            lng: east,
+        }
+    }
 }
 
 function deg2rad(deg) {

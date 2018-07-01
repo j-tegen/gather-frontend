@@ -18,6 +18,7 @@ const EventList = (props) => {
                     handleSelectEvent={props.handleSelectEvent}
                     handleMouseLeave={props.handleMouseLeave}
                     handleMouseEnter={props.handleMouseEnter}
+                    session={props.session}
                     key={event.id}
                     event={event} />
             ))}

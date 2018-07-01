@@ -7,6 +7,7 @@ import LoginDialog from './LoginDialog/LoginDialog'
 import Navigation from './Navigation/Navigation'
 import withTheme from 'utilities/withTheme'
 
+
 const styles = (theme) => {
     return {
         content: {
@@ -27,16 +28,18 @@ const styles = (theme) => {
 }
 
 class App extends Component {
+
   	render() {
-		const { classes } = this.props
+        const { classes } = this.props
+        const session = localStorage.getItem('session') || {}
 		return (
 			<div className={classes.root}>
 				<Navigation openMobile={false} handleDrawerToggle={() => {}} />
-				<AppBar handleToggle={() => {}} />
+				<AppBar session={session} handleToggle={() => {}} />
 				<main className={classes.content}>
                     <div className={classes.toolbar}></div>
                     <Switch>
-                        <Route path='/events' component={EventPage} />
+                        <Route path='/events' render={(props) => <EventPage session={session ? JSON.parse(session) : {}} {...props} />} />
                         <Route path='/login' component={LoginDialog} />
                     </Switch>
 				</main>

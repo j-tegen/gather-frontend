@@ -20,96 +20,40 @@ class EventInfoTab extends Component {
 
     render() {
         const { classes, event, edit = false } = this.props
-        if ( edit ){
-            return (
-                <div>
-                    <DialogContent className={classes.root}>
-                        <Grid container spacing={24}>
-                            <Grid item xs={12} md={6}>
-                                <TextField
-                                    id="title"
-                                    label="Title"
-                                    fullWidth
-                                    value={event.title}
-                                    margin="normal"
-                                />
-                                <TextField
-                                    id="minParticipants"
-                                    label="Min participants"
-                                    fullWidth
-                                    type="number"
-                                    value={event.minParticipants}
-                                    margin="normal"
-                                />
-                                <TextField
-                                    id="maxParticipants"
-                                    label="Max participants"
-                                    fullWidth
-                                    type="number"
-                                    value={event.maxParticipants}
-                                    margin="normal"
-                                />
-                            </Grid>
+        const {
+            title = '',
+            description = '',
+            eventType = '',
+            minParticipants = 0,
+            maxParticipants = 0,
+            startDate = '',
+            startTime,
+            endDate = '',
+            endTime,
+            organizer: { profile: { firstName = '', lastName = ''} },
+            location: { city = '', street = '' },
+        } = event
 
-                            <Grid item xs={12} md={6}>
-                                <TextField
-                                    id="city"
-                                    label="City"
-                                    fullWidth
-                                    value={event.location.city}
-                                    margin="normal"
-                                />
-                                <TextField
-                                    id="street"
-                                    label="Street"
-                                    fullWidth
-                                    value={event.location.street}
-                                    margin="normal"
-                                />
-                                <TextField
-                                    id="country"
-                                    label="Country"
-                                    fullWidth
-                                    value={event.location.country}
-                                    margin="normal"
-                                />
-                            </Grid>
-                        </Grid>
-                    </DialogContent>
-                    <DialogActions>
-                        <Button color="primary" onClick={this.props.handleCancelEdit}>
-                            Cancel
-                        </Button>
-                        <Button color="primary" autoFocus onClick={this.props.handleSave}>
-                            Save
-                        </Button>
-                    </DialogActions>
-                </div>
-            )
-        }
-
-        const { organizer: { profile }, location } = event
-
-        const starts = `${event.startDate} ${event.startTime.substring(0,5)}`
-        const ends = `${event.endDate} ${event.endTime ? event.endTime.substring(0,5) : ''}`
-        const address = `${location.street}, ${location.city}`
+        const starts = `${startDate} ${startTime.substring(0,5)}`
+        const ends = `${endDate || '-'} ${endTime ? endTime.substring(0,5) : ''}`
+        const address = `${street}, ${city}`
         return (
 
             <DialogContent className={classes.root}>
                 <Grid container spacing={24}>
                     <Grid item xs={12} md={6}>
-                        <InformationBox label="Title" value={event.title} />
-                        <InformationBox label="Host" value={`${profile.firstName} ${profile.lastName}`} />
+                        <InformationBox label="Title" value={title} />
+                        <InformationBox label="Host" value={`${firstName} ${lastName}`} />
                         <InformationBox label="Starts" value={starts} />
                         <InformationBox label="Ends" value={ends} />
                     </Grid>
                     <Grid item xs={12} md={6}>
                         <InformationBox label="Location" value={address} />
-                        <InformationBox label="Min participants" value={event.minParticipants} />
-                        <InformationBox label="Max participants" value={event.maxParticipants} />
+                        <InformationBox label="Min participants" value={minParticipants} />
+                        <InformationBox label="Max participants" value={maxParticipants} />
                     </Grid>
                 </Grid>
-                <InformationBox label="Description" value={event.description} />
+                <InformationBox label="Description" value={description} />
             </DialogContent>
 
         )

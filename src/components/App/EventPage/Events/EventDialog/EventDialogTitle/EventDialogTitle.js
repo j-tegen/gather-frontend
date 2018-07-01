@@ -10,7 +10,6 @@ const styles = theme => ({
     dialogTitle: {
         backgroundColor: theme.palette.primary.main,
         height: '200px',
-
     },
     dialogTitleText: {
         color: 'white',

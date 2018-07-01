@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import Events from './Events/Events'
-import EventToolbar from './EventToolbar/EventToolbar'
 
 const styles = theme => ({
     root: {
@@ -13,21 +12,33 @@ const styles = theme => ({
 class EventPage extends Component {
     state = {
         search: '',
+        myCity: false,
         first: 10,
-        skip: 0
+        skip: 0,
+        showFilters: false,
     }
 
-    handleSearch = (search) => {
+    toggleShowFilters() {
         this.setState({
-            search
+            ...this.state,
+            showFilters: !this.state.showFilters
         })
     }
 
     render() {
-        const { search, first, skip } = this.state
+        const { first, skip } = this.state
+        const { session } = this.props
+
         return (
             <div className={this.props.classes.root}>
-                <Events search={search} first={first} skip={skip} />
+                <Events
+                    session={session}
+                    showFilters={this.state.showFilters}
+                    toggleShowFilters={this.toggleShowFilters.bind(this)}
+                    search={this.state.search}
+                    myCity={this.state.myCity}
+                    first={first}
+                    skip={skip} />
             </div>
         )
     }
