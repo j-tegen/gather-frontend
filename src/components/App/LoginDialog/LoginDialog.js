@@ -1,8 +1,7 @@
 import React, { Component } from 'react'
 import { withRouter } from 'react-router-dom'
 import { withStyles } from '@material-ui/core/styles'
-import { graphql, withApollo } from 'react-apollo'
-import gql from 'graphql-tag'
+import { withApollo } from 'react-apollo'
 import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import Dialog from '@material-ui/core/Dialog'
@@ -14,30 +13,10 @@ import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
 
 import withMobileDialog from '@material-ui/core/withMobileDialog'
-import Loader from '../Loader/Loader'
 
+import { TokenAuthMutation } from 'models/user/mutations'
+import { MeQuery } from 'models/user/queries'
 
-const TokenAuthMutation = gql`
-    mutation TokenAuthMutation($username: String!, $password: String!) {
-        tokenAuth(username: $username, password: $password) {
-            token
-        }
-    }
-`
-
-const MeQuery = gql`
-    query MeMutation {
-        me {
-            id
-            username
-            profile {
-                firstName
-                lastName
-            }
-
-        }
-    }
-`
 
 const styles = theme => ({
     dialogPaperMobile: {

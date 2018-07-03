@@ -8,7 +8,8 @@ module.exports = function override(config, env) {
             "alias": {
                 "utilities": "./src/utilities",
                 "settings": "./src/settings.js",
-                "env": "./src/env.js"
+                "env": "./src/env.js",
+                "models": "./src/models"
             }
         }],
         config,

@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { withRouter } from 'react-router-dom'
 import { graphql, compose } from 'react-apollo'
-import gql from 'graphql-tag'
 import ListItem from '@material-ui/core/ListItem'
 import ListItemSecondaryAction from '@material-ui/core/ListItemSecondaryAction'
 import ListItemText from '@material-ui/core/ListItemText'
@@ -15,25 +14,8 @@ import MenuItem from '@material-ui/core/MenuItem'
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
 import StarIcon from '@material-ui/icons/Star'
 
-
-const deleteMutation = gql `
-    mutation EventMutation($id: Int!) {
-        deleteEvent(id: $id) {
-            id
-        }
-    }
-`
-
-const createParticipantMutation = gql`
-    mutation CreateParticipantMutation($id: Int!, $status: ParticipantStatus!) {
-        createParticipant(idEvent: $id, status: $status) {
-            participant {
-                id
-            }
-        }
-    }
-`
-
+import { DeleteEventMutation } from 'models/event/mutations'
+import { CreateParticipantMutation } from 'models/participant/mutations'
 
 class EventListItem extends Component {
 
@@ -56,9 +38,7 @@ class EventListItem extends Component {
 
     async handleDelete() {
         try {
-
-            const response = await this.props.deleteEventMutation({
-
+            await this.props.DeleteEventMutation({
                 variables: {
                     id: this.props.event.id
                 }
@@ -72,7 +52,7 @@ class EventListItem extends Component {
     async handleEventParticipation() {
 
         try {
-            await this.props.createParticipantMutation({
+            await this.props.CreateParticipantMutation({
                 variables: {
                     id: this.props.event.id,
                     status: 'INTERESTED'
@@ -86,7 +66,7 @@ class EventListItem extends Component {
 
     async handleGoingToEvent() {
         try {
-            const response = await this.props.createParticipantMutation({
+            await this.props.createParticipantMutation({
                 variables: {
                     id: this.props.event.id,
                     status: 'GOING'
@@ -187,6 +167,6 @@ class EventListItem extends Component {
 }
 
 export default withRouter(compose(
-    graphql(deleteMutation, { name: 'deleteEventMutation' }),
-    graphql(createParticipantMutation, { name: 'createParticipantMutation' }),
+    graphql(DeleteEventMutation, { name: 'DeleteEventMutation' }),
+    graphql(CreateParticipantMutation, { name: 'CreateParticipantMutation' }),
 )(EventListItem))
