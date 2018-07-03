@@ -63,6 +63,9 @@ const EventsQuery = gql`
 			participants {
 				id
 				status
+				user {
+					id
+				}
 			}
 			location {
 				id

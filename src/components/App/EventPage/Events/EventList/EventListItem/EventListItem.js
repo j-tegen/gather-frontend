@@ -38,8 +38,10 @@ const createParticipantMutation = gql`
 class EventListItem extends Component {
 
     state = {
-        anchorEl: null
+        anchorEl: null,
+        participant: null,
     }
+
     handleMenu(event) {
         this.setState({ anchorEl: event.currentTarget })
     }
@@ -67,7 +69,8 @@ class EventListItem extends Component {
         }
     }
 
-    async handleInterestedInEvent() {
+    async handleEventParticipation() {
+
         try {
             await this.props.createParticipantMutation({
                 variables: {
@@ -93,6 +96,18 @@ class EventListItem extends Component {
         } catch (e) {
             console.log(e)
         }
+    }
+
+    componentWillMount() {
+
+        const participant = this.props.event.participants.find(participant => (
+            participant.user.id === this.props.session.id
+        ))
+        this.setState({
+            ...this.state,
+            participant
+        })
+
     }
 
     render() {
@@ -149,7 +164,7 @@ class EventListItem extends Component {
                         </MenuItem>
                         : ''}
                         { session.id !== event.organizer.id
-                        ? <MenuItem onClick={this.handleInterestedInEvent.bind(this)}>
+                        ? <MenuItem onClick={this.handleEventParticipation.bind(this)}>
                             <ListItemIcon>
                                 <StarIcon />
                             </ListItemIcon>

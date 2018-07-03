@@ -52,6 +52,7 @@ class AppBar extends React.Component {
         const { classes, handleToggle, handleLogout, session } = this.props
         const { anchorEl } = this.state
         const open = Boolean(anchorEl)
+        console.log(session.token)
         return (
             <MuiAppBar className={classes.appBar}>
                 <Toolbar>
@@ -91,7 +92,7 @@ class AppBar extends React.Component {
                         >
                             <MenuItem onClick={this.handleClose.bind(this)}>My profile</MenuItem>
                             {
-                                !session
+                                !session.token
                                 ? <Link to={{ pathname: '/login', state: { fromPath: this.props.location.pathname}}}  style={{ textDecoration: 'none', display: 'block' }}>
                                     <MenuItem >Sign in</MenuItem>
                                   </Link>

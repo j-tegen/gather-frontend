@@ -31,7 +31,8 @@ class App extends Component {
 
   	render() {
         const { classes } = this.props
-        const session = localStorage.getItem('session') || {}
+        let session = localStorage.getItem('session')
+        session = session ? JSON.parse(session) : {}
 		return (
 			<div className={classes.root}>
 				<Navigation openMobile={false} handleDrawerToggle={() => {}} />
@@ -39,7 +40,7 @@ class App extends Component {
 				<main className={classes.content}>
                     <div className={classes.toolbar}></div>
                     <Switch>
-                        <Route path='/events' render={(props) => <EventPage session={session ? JSON.parse(session) : {}} {...props} />} />
+                        <Route path='/events' render={(props) => <EventPage session={session} {...props} />} />
                         <Route path='/login' component={LoginDialog} />
                     </Switch>
 				</main>

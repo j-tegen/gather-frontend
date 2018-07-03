@@ -1,5 +1,6 @@
 import React, { Component } from 'react'
 import Toolbar from '@material-ui/core/Toolbar'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Checkbox from '@material-ui/core/Checkbox'
 import { withStyles } from '@material-ui/core/styles'
 
@@ -27,11 +28,17 @@ class EventToolbar extends Component {
     render() {
         return (
             <Toolbar className={this.props.classes.toolbar}>
-                <Checkbox
-                    checked={this.state.showFilters}
-                    onChange={this.toggleShowFilters('myCity')}
-                    value="myCity"
-                    />
+                <FormControlLabel
+                    control={
+                        <Checkbox
+                            checked={this.state.showFilters}
+                            onChange={this.toggleShowFilters('myCity')}
+                            value="myCity"
+                        />
+                    }
+                    label="Close to me"
+                />
+
             </Toolbar>
         )
     }
