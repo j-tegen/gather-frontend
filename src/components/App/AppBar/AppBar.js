@@ -49,7 +49,7 @@ class AppBar extends React.Component {
 
     render() {
 
-        const { classes, handleToggle, handleLogout, session } = this.props
+        const { classes, handleToggle, session } = this.props
         const { anchorEl } = this.state
         const open = Boolean(anchorEl)
         return (

@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 import { Switch, Route, Link } from 'react-router-dom'
 import { graphql } from 'react-apollo'
-import gql from 'graphql-tag'
 import { withStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
 import Button from '@material-ui/core/Button'
@@ -14,6 +13,8 @@ import EventDialogContainer from './EventDialog/EventDialogContainer'
 import CreateEvent from './CreateEvent/CreateEvent'
 import Loader from '../../Loader/Loader'
 import EventToolbar from './EventToolbar/EventToolbar'
+
+import { EventsQuery } from 'models/event/queries'
 
 
 const styles = theme => ({
@@ -38,55 +39,6 @@ const styles = theme => ({
 		right: theme.spacing.unit * 2,
 	}
 })
-
-const EventsQuery = gql`
-	query EventsQuery($search: String!, $first: Int, $skip: Int) {
-		events(search: $search, first: $first, skip: $skip) {
-			id
-			title
-			description
-			startDate
-			startTime
-			endDate
-			endTime
-			eventType
-			minParticipants
-			maxParticipants
-			organizer {
-				id
-				username
-				profile {
-					firstName
-					lastName
-				}
-			}
-			participants {
-				id
-				status
-			}
-			location {
-				id
-				city
-				street
-				country
-				longitude
-				latitude
-			}
-			posts {
-                id
-				title
-				body
-				user {
-					username
-				}
-			}
-			tags {
-				id
-				text
-			}
-		}
-	}
-`
 
 
 class Events extends Component {

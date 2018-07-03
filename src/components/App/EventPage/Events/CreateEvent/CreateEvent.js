@@ -2,7 +2,6 @@ import React, { Component } from 'react'
 import { withRouter } from 'react-router-dom'
 import { withStyles } from '@material-ui/core/styles'
 import { graphql } from 'react-apollo'
-import gql from 'graphql-tag'
 import Dialog from '@material-ui/core/Dialog'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import DialogContent from '@material-ui/core/DialogContent'
@@ -16,16 +15,9 @@ import withMobileDialog from '@material-ui/core/withMobileDialog'
 import { TimePicker, DatePicker } from 'material-ui-pickers'
 import { format } from 'date-fns/esm'
 
+import { CreateEventMutation } from 'models/event/mutations'
 
-const CreateEventMutation = gql`
-    mutation EventMutation($eventData: EventInput!, $locationData: LocationInput!) {
-        createEvent(eventData: $eventData, locationData: $locationData) {
-            event {
-                id
-            }
-        }
-    }
-`
+
 
 const styles = theme => ({
     dialogPaperMobile: {
@@ -35,12 +27,6 @@ const styles = theme => ({
         overflow: 'hidden',
         top: '10vh',
         position: 'absolute',
-    },
-    dialogTitle: {
-        backgroundColor: theme.palette.primary.main,
-    },
-    dialogTitleText: {
-        color: 'white',
     },
     dialogTitle: {
         backgroundColor: theme.palette.primary.main,
@@ -112,12 +98,12 @@ class CreateEvent extends Component {
         }
         console.log(eventData)
 
-        const response = this.props.mutate({
+        this.props.mutate({
             variables: {
                 eventData,
                 locationData
             }
-        }).then((response) => this.handleClose())
+        }).then(() => this.handleClose())
         .catch((error) => console.log(error))
 
     }

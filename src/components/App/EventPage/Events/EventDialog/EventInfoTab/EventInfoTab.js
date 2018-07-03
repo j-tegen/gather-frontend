@@ -1,10 +1,6 @@
 import React, { Component } from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import DialogContent from '@material-ui/core/DialogContent'
-import DialogActions from '@material-ui/core/DialogActions'
-import Button from '@material-ui/core/Button'
-import TextField from '@material-ui/core/TextField'
-import Typography from '@material-ui/core/Typography'
 import Grid from '@material-ui/core/Grid'
 import InformationBox from '../../../../InformationBox/InformationBox'
 
@@ -19,11 +15,10 @@ const styles = theme => ({
 class EventInfoTab extends Component {
 
     render() {
-        const { classes, event, edit = false } = this.props
+        const { classes, event } = this.props
         const {
             title = '',
             description = '',
-            eventType = '',
             minParticipants = 0,
             maxParticipants = 0,
             startDate = '',
