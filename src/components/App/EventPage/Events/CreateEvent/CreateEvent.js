@@ -16,6 +16,7 @@ import { TimePicker, DatePicker } from 'material-ui-pickers'
 import { format } from 'date-fns/esm'
 
 import { CreateEventMutation } from 'models/event/mutations'
+import { EventsQuery } from 'models/event/queries'
 
 
 
@@ -102,6 +103,19 @@ class CreateEvent extends Component {
             variables: {
                 eventData,
                 locationData
+            },
+            options: {
+                update: (store, { data }) => {
+                    const variables = { limit: 10, skip: 0, search: '' }
+                    console.log(data)
+                    const events = store.readQuery({ query: EventsQuery, variables })
+                    events.unshift(data.event)
+                    store.writeQuery({
+                        query: EventsQuery,
+                        data: events,
+                        variables
+                    })
+                }
             }
         }).then(() => this.handleClose())
         .catch((error) => console.log(error))
