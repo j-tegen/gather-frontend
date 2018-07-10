@@ -16,6 +16,7 @@ import { TimePicker, DatePicker } from 'material-ui-pickers'
 import { format } from 'date-fns/esm'
 
 import { CreateEventMutation } from 'models/event/mutations'
+import { EventsQuery } from 'models/event/queries'
 
 
 
@@ -97,14 +98,40 @@ class CreateEvent extends Component {
             endTime: eventData.endTime ? format(eventData.endTime, 'HH:mm') : null,
         }
         console.log(eventData)
+        try {
+            await this.props.mutate({
+                variables: {
+                    eventData,
+                    locationData,
+                },
+                optimisticResponse: {
+                    __typename: 'Mutation',
+                    createEvent: {
+                        __typename: 'EventType',
+                        ...eventData,
+                        ...locationData,
+                    },
+                },
+                update: (store, { data }) => {
+                    const variables = { limit: 10, skip: 0, search: '' }
+                    console.log(data)
+                    const events = store.readQuery({
+                        query: EventsQuery,
+                        variables,
+                    })
+                    events.unshift(data.event)
+                    store.writeQuery({
+                        query: EventsQuery,
+                        data: events,
+                        variables,
+                    })
+                }
+            })
+            this.handleClose()
+        } catch(e) {
+            console.log(e)
+        }
 
-        this.props.mutate({
-            variables: {
-                eventData,
-                locationData
-            }
-        }).then(() => this.handleClose())
-        .catch((error) => console.log(error))
 
     }
 
@@ -179,10 +206,6 @@ class CreateEvent extends Component {
                         value={this.state.eventData.endTime}
                         onChange={this.handleChangeTime('eventData', 'endTime')}
                     />
-
-
-
-
                 </DialogContent>
                 <DialogActions>
                     <Button color="primary" onClick={this.handleClose}>
