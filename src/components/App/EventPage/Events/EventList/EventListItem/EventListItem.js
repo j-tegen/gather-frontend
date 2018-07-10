@@ -38,8 +38,23 @@ class EventListItem extends Component {
         try {
             await this.props.DeleteEventMutation({
                 variables: {
-                    id: this.props.event.id
+                    id: this.props.event.id,
+                },
+                update: (store, { data } ) => {
+                    const variables = { limit: 10, skip: 0, search: '' }
+                    console.log(data)
+                    const events = store.readQuery({
+                        query: EventsQuery,
+                        variables
+                    })
+                    const index = events.findIndex(event => event.id === data.id)
+                    store.writeQuery({
+                        query: EventsQuery,
+                        data: events.splice(index, 1),
+                        variables
+                    })
                 }
+
             })
             this.handleCloseMenu()
         } catch(e) {
