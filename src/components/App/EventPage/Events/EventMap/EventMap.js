@@ -44,7 +44,7 @@ class EventMap extends Component {
                 >
                 {events.map((event) => {
                     const { location } = event
-                    return <MapMarker selected={this.props.selectedEvent === event} hovered={this.props.hoveredEvent === event} key={location.id} lat={location.latitude} lng={location.longitude} text={location.title} />
+                    return <MapMarker selected={this.props.selectedEvent === event} hovered={this.props.hoveredEvent === event} key={`${event.id}`} lat={location.latitude} lng={location.longitude} text={location.title} />
                 })}
                 </GoogleMapReact>
                 : ''

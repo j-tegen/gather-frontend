@@ -29,6 +29,9 @@ const eventfragment = gql`
         }
         participants {
             ...participantFields
+            user {
+                ...userFields
+            }
         }
         posts {
             ...postFields

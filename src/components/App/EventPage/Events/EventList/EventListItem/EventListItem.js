@@ -13,9 +13,17 @@ import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
 import StarIcon from '@material-ui/icons/Star'
+import NotInterestedIcon from '@material-ui/icons/NotInterested'
+import CheckIcon from '@material-ui/icons/Check'
 
 import { DeleteEventMutation } from 'models/event/mutations'
-import { CreateParticipantMutation } from 'models/participant/mutations'
+import { CreateParticipantMutation, UpdateParticipantMutation } from 'models/participant/mutations'
+import { EventsQuery } from 'models/event/queries'
+
+const updateParticipantCache = (store, mutation) => {
+    const { updateParticipant } = mutation
+
+}
 
 class EventListItem extends Component {
 
@@ -49,32 +57,45 @@ class EventListItem extends Component {
         }
     }
 
-    async handleEventParticipation() {
-
+    async handleEventParticipation(status) {
         try {
-            await this.props.CreateParticipantMutation({
-                variables: {
-                    id: this.props.event.id,
-                    status: 'INTERESTED'
-                }
-            })
+            if (this.state.participant) {
+                await this.updateParticipant(this.state.participant.id, status)
+            }
+            else {
+                await this.createParticipant(status)
+            }
             this.handleCloseMenu()
         } catch (e) {
             console.log(e)
         }
     }
 
-    async handleGoingToEvent() {
+    async createParticipant(status) {
         try {
-            await this.props.createParticipantMutation({
+            await this.props.CreateParticipantMutation({
                 variables: {
                     id: this.props.event.id,
-                    status: 'GOING'
+                    status
                 }
             })
             this.handleCloseMenu()
         } catch (e) {
-            console.log(e)
+            throw new Error(e)
+        }
+    }
+
+    async updateParticipant(id, status) {
+        try {
+            await this.props.UpdateParticipantMutation({
+                variables: {
+                    id: id,
+                    status
+                }
+            })
+            this.handleCloseMenu()
+        } catch (e) {
+            throw new Error(e)
         }
     }
 
@@ -121,45 +142,61 @@ class EventListItem extends Component {
                         color="inherit">
                         <MoreVertIcon />
                     </IconButton>
-                    <Menu
-                        id={`menu-event-item-${event.id}`}
-                        anchorEl={anchorEl}
-                        anchorOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
-                        }}
-                        transformOrigin={{
-                            vertical: 'top',
-                            horizontal: 'right',
-                        }}
-                        open={open}
-                        onClose={this.handleCloseMenu.bind(this)}
-                    >
-                        { session.id === event.organizer.id
-                        ? <MenuItem onClick={this.handleDelete.bind(this)}>
-                            <ListItemIcon>
-                                <DeleteForeverIcon />
-                            </ListItemIcon>
-                            <ListItemText inset primary="Delete" />
-                        </MenuItem>
-                        : ''}
-                        { session.id !== event.organizer.id
-                        ? <MenuItem onClick={this.handleEventParticipation.bind(this)}>
-                            <ListItemIcon>
-                                <StarIcon />
-                            </ListItemIcon>
-                            <ListItemText inset primary="This looks interesting!" />
-                        </MenuItem>
-                        : '' }
-                        { session.id !== event.organizer.id
-                        ? <MenuItem onClick={this.handleGoingToEvent.bind(this)}>
-                            <ListItemIcon>
-                                <DeleteForeverIcon />
-                            </ListItemIcon>
-                            <ListItemText inset primary="I'm going!" />
-                        </MenuItem>
-                        : '' }
-                    </Menu>
+                    {
+                            session.id === event.organizer.id
+                    ?   <Menu
+                            id={`menu-event-item-${event.id}`}
+                            anchorEl={anchorEl}
+                            anchorOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            open={open}
+                            onClose={this.handleCloseMenu.bind(this)}>
+                           <MenuItem onClick={this.handleDelete.bind(this)}>
+                                <ListItemIcon>
+                                    <DeleteForeverIcon />
+                                </ListItemIcon>
+                                <ListItemText inset primary="Delete" />
+                            </MenuItem>
+                        </Menu>
+                    :   <Menu
+                            id={`menu-event-item-${event.id}`}
+                            anchorEl={anchorEl}
+                            anchorOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            transformOrigin={{
+                                vertical: 'top',
+                                horizontal: 'right',
+                            }}
+                            open={open}
+                            onClose={this.handleCloseMenu.bind(this)}>
+                            <MenuItem onClick={() => this.handleEventParticipation('INTERESTED')}>
+                                <ListItemIcon>
+                                    <StarIcon />
+                                </ListItemIcon>
+                                <ListItemText inset primary="This looks interesting!" />
+                            </MenuItem>
+                            <MenuItem onClick={() => this.handleEventParticipation('GOING')}>
+                                <ListItemIcon>
+                                    <CheckIcon />
+                                </ListItemIcon>
+                                <ListItemText inset primary="I'm going!" />
+                            </MenuItem>
+                            <MenuItem onClick={() => this.handleEventParticipation('NOTGOING')}>
+                                <ListItemIcon>
+                                    <NotInterestedIcon />
+                                </ListItemIcon>
+                                <ListItemText inset primary="Not going :(" />
+                            </MenuItem>
+                        </Menu>
+                        }
                 </ListItemSecondaryAction>
             </ListItem>
         )
@@ -169,4 +206,5 @@ class EventListItem extends Component {
 export default withRouter(compose(
     graphql(DeleteEventMutation, { name: 'DeleteEventMutation' }),
     graphql(CreateParticipantMutation, { name: 'CreateParticipantMutation' }),
+    graphql(UpdateParticipantMutation, { name: 'UpdateParticipantMutation', options: { update: (store, { data }) => updateParticipantCache(store, data) }}),
 )(EventListItem))
