@@ -98,17 +98,19 @@ class CreateEvent extends Component {
             endTime: eventData.endTime ? format(eventData.endTime, 'HH:mm') : null,
         }
         console.log(eventData)
-
-        this.props.mutate({
-            variables: {
-                eventData,
-                locationData
-            },
-            options: {
+        try {
+            await this.props.mutate({
+                variables: {
+                    eventData,
+                    locationData
+                },
                 update: (store, { data }) => {
                     const variables = { limit: 10, skip: 0, search: '' }
                     console.log(data)
-                    const events = store.readQuery({ query: EventsQuery, variables })
+                    const events = store.readQuery({
+                        query: EventsQuery,
+                        variables
+                    })
                     events.unshift(data.event)
                     store.writeQuery({
                         query: EventsQuery,
@@ -116,9 +118,12 @@ class CreateEvent extends Component {
                         variables
                     })
                 }
-            }
-        }).then(() => this.handleClose())
-        .catch((error) => console.log(error))
+            })
+            this.handleClose()
+        } catch(e) {
+            console.log(e)
+        }
+
 
     }
 
