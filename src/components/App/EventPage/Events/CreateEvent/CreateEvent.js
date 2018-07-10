@@ -102,20 +102,28 @@ class CreateEvent extends Component {
             await this.props.mutate({
                 variables: {
                     eventData,
-                    locationData
+                    locationData,
+                },
+                optimisticResponse: {
+                    __typename: 'Mutation',
+                    createEvent: {
+                        __typename: 'EventType',
+                        ...eventData,
+                        ...locationData,
+                    },
                 },
                 update: (store, { data }) => {
                     const variables = { limit: 10, skip: 0, search: '' }
                     console.log(data)
                     const events = store.readQuery({
                         query: EventsQuery,
-                        variables
+                        variables,
                     })
                     events.unshift(data.event)
                     store.writeQuery({
                         query: EventsQuery,
                         data: events,
-                        variables
+                        variables,
                     })
                 }
             })
@@ -198,10 +206,6 @@ class CreateEvent extends Component {
                         value={this.state.eventData.endTime}
                         onChange={this.handleChangeTime('eventData', 'endTime')}
                     />
-
-
-
-
                 </DialogContent>
                 <DialogActions>
                     <Button color="primary" onClick={this.handleClose}>

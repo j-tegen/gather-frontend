@@ -47,6 +47,7 @@ class EventListItem extends Component {
                         query: EventsQuery,
                         variables
                     })
+
                     const index = events.findIndex(event => event.id === data.id)
                     store.writeQuery({
                         query: EventsQuery,
