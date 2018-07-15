@@ -3,7 +3,8 @@ import locationFragment from '../location/fragments'
 import participantFragment from '../participant/fragments'
 import postFragment from '../post/fragments'
 import tagFragment from '../tag/fragments'
-import { userFragment, profileFragment } from '../user/fragments'
+import { profileFragment } from '../profile/fragments'
+import { userFragment } from '../user/fragments'
 
 
 const eventfragment = gql`

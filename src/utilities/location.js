@@ -18,8 +18,9 @@ export const getCenterLocations = (locations) => {
             longitude: (firstValue.longitude + secondValue.longitude) ,/// locations.length,
         }
     })
-
-    return { lat: center.latitude / locations.length, lng: center.longitude / locations.length }
+    const lat = center.latitude / locations.length
+    const lng = center.longitude / locations.length
+    return { lat: lat || 0, lng: 0 }
 }
 
 export const getBounds = (locations) => {

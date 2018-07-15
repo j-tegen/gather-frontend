@@ -92,12 +92,22 @@ class AppBar extends React.Component {
                         >
                             <MenuItem onClick={this.handleClose.bind(this)}>My profile</MenuItem>
                             {
-                                !session.token
-                                ? <Link to={{ pathname: '/login', state: { fromPath: this.props.location.pathname}}}  style={{ textDecoration: 'none', display: 'block' }}>
+                                !session.token &&
+                                 <Link to={{ pathname: '/login', state: { fromPath: this.props.location.pathname}}}  style={{ textDecoration: 'none', display: 'block' }}>
                                     <MenuItem >Sign in</MenuItem>
                                   </Link>
-                                : <MenuItem onClick={this.signOut.bind(this)}>Sign out</MenuItem>
                             }
+                            {
+                                !session.token &&
+                                 <Link to={{ pathname: '/register', state: { fromPath: this.props.location.pathname}}}  style={{ textDecoration: 'none', display: 'block' }}>
+                                    <MenuItem >Sign up</MenuItem>
+                                  </Link>
+                            }
+                            {
+                                session.token &&
+                                <MenuItem onClick={this.signOut.bind(this)}>Sign out</MenuItem>
+                            }
+
                         </Menu>
                     </div>
                 </Toolbar>

@@ -18,7 +18,6 @@ const httpLink = new HttpLink({ uri: SERVER_URL })
 
 const authLink = setContext((_, {headers }) => {
     const session = localStorage.getItem('session')
-    console.log(session)
     return {
         headers: {
             ...headers,

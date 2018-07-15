@@ -13,6 +13,11 @@ import EventDialogContainer from './EventDialog/EventDialogContainer'
 import CreateEvent from './CreateEvent/CreateEvent'
 import Loader from '../../Loader/Loader'
 import EventToolbar from './EventToolbar/EventToolbar'
+import BottomNavigation from '@material-ui/core/BottomNavigation'
+import BottomNavigationAction from '@material-ui/core/BottomNavigationAction'
+import StarIcon from '@material-ui/icons/Star'
+import FavoriteIcon from '@material-ui/icons/Favorite'
+import LocationOnIcon from '@material-ui/icons/LocationOn'
 
 import { EventsQuery } from 'models/event/queries'
 
@@ -27,6 +32,7 @@ const styles = theme => ({
 	},
     paper: {
 		height: '100%',
+		minHeight: '95vh',
 	},
 	mapContainer: {
 		height: '95%',
@@ -37,6 +43,11 @@ const styles = theme => ({
 		marginBottom: '56px',
 		bottom: theme.spacing.unit * 2,
 		right: theme.spacing.unit * 2,
+	},
+	bottomNavigation: {
+		position: 'absolute',
+		width: '100%',
+		bottom: theme.spacing.unit * 8
 	}
 })
 
@@ -73,12 +84,11 @@ class Events extends Component {
 			return <div>Error...</div>
 		}
 		const { data : { events }, classes, session, search, myCity } = this.props
-
     	return (
 			<Grid className={classes.root} container spacing={0}>
 				<Grid className={classes.column} item xs={12} md={7}>
 					<Paper className={classes.paper} elevation={4}>
-					<EventToolbar showFilters={this.props.showFilters} toggleShowFilters={this.props.toggleShowFilters} />
+					{/* <EventToolbar showFilters={this.props.showFilters} toggleShowFilters={this.props.toggleShowFilters} /> */}
 						<EventList
 							events={events}
 							session={session}
@@ -87,15 +97,24 @@ class Events extends Component {
 							handleSelectEvent={this.handleSelectEvent}
 							handleMouseEnter={this.handleMouseEnter}
 							handleMouseLeave={this.handleMouseLeave} />
-
+						<BottomNavigation
+							value={0}
+							// onChange={this.handleChange}
+							showLabels
+							className={classes.bottomNavigation}
+						>
+							<BottomNavigationAction label="Nearby events" icon={<LocationOnIcon />} />
+							<BottomNavigationAction label="Events I've responded to" icon={<StarIcon />} />
+							<BottomNavigationAction label="My events" icon={<FavoriteIcon />} />
+						</BottomNavigation>
 					</Paper>
-					{ session ?
+
+					{ session.id &&
 						<Link to='/events/new'>
 							<Button variant="fab" color="secondary" aria-label="create" className={classes.fab}>
 								<AddIcon />
 							</Button>
 						</Link>
-					: ''
 					}
 				</Grid>
 				<Grid item xs={false} md={5}>

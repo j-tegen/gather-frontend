@@ -19,6 +19,7 @@ class EventMap extends Component {
         height: null,
         width: null,
     }
+
     componentDidMount() {
         const height = document.getElementById('event-map').clientHeight
         const width = document.getElementById('event-map').clientWidth
@@ -33,21 +34,38 @@ class EventMap extends Component {
         const bounds = getBounds(events.map(event => event.location))
 
         const {center, zoom } = fitBounds(bounds, { width: this.state.width, height: this.state.height })
+        const uniqueLocations = [... new Set(events.map(event => event.location.googleId))]
+        console.log(uniqueLocations)
 
+        // The following is due to random bugs with fitBounds when handling zero or one geopoint :(
+        let defaultCenter = {
+            lat: center.lat || 40,
+            lng: center.lng || 10
+        }
+        let defaultZoom = zoom || 0
+
+        if (uniqueLocations.length === 1) {
+            defaultCenter = {
+                lat: events[0].location.latitude,
+                lng: events[0].location.longitude
+            }
+            defaultZoom = 13
+        }
+
+
+        console.log(defaultZoom, defaultCenter, zoom, center, this.state.height, this.state.width)
         return (
             <div id="event-map" className={classes.mapContainer}>
-                { zoom
-                ? <GoogleMapReact
+                <GoogleMapReact
                     bootstrapURLKeys={{key: googleMapsKey}}
-                    defaultCenter={center}
-                    defaultZoom={zoom}
+                    defaultCenter={defaultCenter}
+                    defaultZoom={defaultZoom}
                 >
                 {events.map((event) => {
                     const { location } = event
                     return <MapMarker selected={this.props.selectedEvent === event} hovered={this.props.hoveredEvent === event} key={`${event.id}`} lat={location.latitude} lng={location.longitude} text={location.title} />
                 })}
                 </GoogleMapReact>
-                : ''
             }
             </div>
         )

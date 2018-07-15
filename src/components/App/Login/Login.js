@@ -47,7 +47,7 @@ const styles = theme => ({
 
 })
 
-class LoginDialog extends Component {
+class Login extends Component {
     state = {
         username: '',
         password: '',
@@ -155,4 +155,4 @@ class LoginDialog extends Component {
     }
 }
 
-export default withRouter(withMobileDialog()(withStyles(styles)(withApollo(LoginDialog))))
+export default withRouter(withMobileDialog()(withStyles(styles)(withApollo(Login))))

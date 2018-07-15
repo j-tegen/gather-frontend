@@ -3,7 +3,8 @@ import { Switch, Route } from 'react-router-dom'
 import { withStyles } from '@material-ui/core/styles'
 import EventPage from './EventPage/EventPage'
 import AppBar from './AppBar/AppBar'
-import LoginDialog from './LoginDialog/LoginDialog'
+import Login from './Login/Login'
+import Register from './Register/Register'
 import Navigation from './Navigation/Navigation'
 import withTheme from 'utilities/withTheme'
 
@@ -32,6 +33,7 @@ class App extends Component {
         const { classes } = this.props
         let session = localStorage.getItem('session')
         session = session ? JSON.parse(session) : {}
+
 		return (
 			<div className={classes.root}>
 				<Navigation openMobile={false} handleDrawerToggle={() => {}} />
@@ -40,7 +42,8 @@ class App extends Component {
                     <div className={classes.toolbar}></div>
                     <Switch>
                         <Route path='/events' render={(props) => <EventPage session={session} {...props} />} />
-                        <Route path='/login' component={LoginDialog} />
+                        <Route path='/login' component={Login} />
+                        <Route path='/register' component={Register} />
                     </Switch>
 				</main>
 			</div>

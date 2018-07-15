@@ -8,6 +8,8 @@ const locationFragment = gql`
         country
         longitude
         latitude
+        googleFormattedAddress
+        googleId
     }
 `
 

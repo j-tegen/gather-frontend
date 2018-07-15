@@ -6,11 +6,3 @@ export const userFragment = gql `
         username
     }
 `
-
-export const profileFragment = gql`
-    fragment profileFields on ProfileType {
-        id
-        firstName
-        lastName
-    }
-`

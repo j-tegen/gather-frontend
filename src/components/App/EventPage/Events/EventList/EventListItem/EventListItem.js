@@ -15,6 +15,7 @@ import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
 import StarIcon from '@material-ui/icons/Star'
 import NotInterestedIcon from '@material-ui/icons/NotInterested'
 import CheckIcon from '@material-ui/icons/Check'
+import EditIcon from '@material-ui/icons/Edit'
 
 import { DeleteEventMutation } from 'models/event/mutations'
 import { CreateParticipantMutation, UpdateParticipantMutation } from 'models/participant/mutations'
@@ -50,24 +51,23 @@ class EventListItem extends Component {
                 variables: {
                     id: this.props.event.id,
                 },
-                update: (store, { data } ) => {
-                    const variables = { limit: 10, skip: 0, search: '' }
-                    console.log(data)
-                    const events = store.readQuery({
+                update: (store, { data: { deleteEvent: { id } } } ) => {
+
+                    const variables = { first: 10, skip: 0, search: '' }
+
+                    const { events } = store.readQuery({
                         query: EventsQuery,
                         variables
                     })
 
-                    const index = events.findIndex(event => event.id === data.id)
                     store.writeQuery({
                         query: EventsQuery,
-                        data: events.splice(index, 1),
+                        data: { events: events.filter(event => event.id != id) },
                         variables
                     })
                 }
 
             })
-            this.handleCloseMenu()
         } catch(e) {
             console.log(e)
         }
@@ -144,7 +144,6 @@ class EventListItem extends Component {
         const secondaryText = `${startDate} ${startTime.substring(0,5)}`
         const nbrGoing = participants.filter(participant => participant.status === 'GOING').length
         const tooltip = `${nbrGoing} ${nbrGoing === 1 ? 'is' : 'are'} going to the event for ${minParticipants} to ${maxParticipants} participants!`
-
         return (
             <ListItem onClick={() => this.handleSelectEvent(event)} onMouseEnter={() => this.props.handleMouseEnter(event)} onMouseLeave={() => this.props.handleMouseLeave()} button>
                 <Tooltip title={tooltip} placement="right">
@@ -152,69 +151,89 @@ class EventListItem extends Component {
                 </Tooltip>
                 <ListItemText primary={title} secondary={secondaryText} />
                 <ListItemSecondaryAction>
+                    { session.id &&
                     <IconButton aria-owns={open ? `menu-event-item-${event.id}` : null}
                         aria-haspopup="true"
                         onClick={this.handleMenu.bind(this)}
                         color="inherit">
                         <MoreVertIcon />
                     </IconButton>
+                    }
                     {
-                            session.id === event.organizer.id
-                    ?   <Menu
-                            id={`menu-event-item-${event.id}`}
-                            anchorEl={anchorEl}
-                            anchorOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            open={open}
-                            onClose={this.handleCloseMenu.bind(this)}>
-                           <MenuItem onClick={this.handleDelete.bind(this)}>
-                                <ListItemIcon>
-                                    <DeleteForeverIcon />
-                                </ListItemIcon>
-                                <ListItemText inset primary="Delete" />
-                            </MenuItem>
-                        </Menu>
-                    :   <Menu
-                            id={`menu-event-item-${event.id}`}
-                            anchorEl={anchorEl}
-                            anchorOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            transformOrigin={{
-                                vertical: 'top',
-                                horizontal: 'right',
-                            }}
-                            open={open}
-                            onClose={this.handleCloseMenu.bind(this)}>
-                            <MenuItem onClick={() => this.handleEventParticipation('INTERESTED')}>
-                                <ListItemIcon>
-                                    <StarIcon />
-                                </ListItemIcon>
-                                <ListItemText inset primary="This looks interesting!" />
-                            </MenuItem>
-                            <MenuItem onClick={() => this.handleEventParticipation('GOING')}>
-                                <ListItemIcon>
-                                    <CheckIcon />
-                                </ListItemIcon>
-                                <ListItemText inset primary="I'm going!" />
-                            </MenuItem>
-                            <MenuItem onClick={() => this.handleEventParticipation('NOTGOING')}>
-                                <ListItemIcon>
-                                    <NotInterestedIcon />
-                                </ListItemIcon>
-                                <ListItemText inset primary="Not going :(" />
-                            </MenuItem>
-                        </Menu>
-                        }
+                        session.id === event.organizer.id
+                        ? this.renderOrganizerList(event, anchorEl, open)
+                        : this.renderUserList(event, anchorEl, open)
+                    }
                 </ListItemSecondaryAction>
             </ListItem>
+        )
+    }
+
+    renderOrganizerList(event, anchorEl, open) {
+        return (
+            <Menu
+                id={`menu-event-item-${event.id}`}
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                open={open}
+                onClose={this.handleCloseMenu.bind(this)}>
+                <MenuItem onClick={this.handleDelete.bind(this)}>
+                    <ListItemIcon>
+                        <DeleteForeverIcon />
+                    </ListItemIcon>
+                    <ListItemText inset primary="Delete" />
+                </MenuItem>
+                <MenuItem onClick={() => console.log('EDIT!')}>
+                    <ListItemIcon>
+                        <EditIcon />
+                    </ListItemIcon>
+                    <ListItemText inset primary="Edit" />
+                </MenuItem>
+            </Menu>
+        )
+    }
+
+    renderUserList(event, anchorEl, open) {
+        return (
+            <Menu
+                id={`menu-event-item-${event.id}`}
+                anchorEl={anchorEl}
+                anchorOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                transformOrigin={{
+                    vertical: 'top',
+                    horizontal: 'right',
+                }}
+                open={open}
+                onClose={this.handleCloseMenu.bind(this)}>
+                <MenuItem onClick={() => this.handleEventParticipation('INTERESTED')}>
+                    <ListItemIcon>
+                        <StarIcon />
+                    </ListItemIcon>
+                    <ListItemText inset primary="This looks interesting!" />
+                </MenuItem>
+                <MenuItem onClick={() => this.handleEventParticipation('GOING')}>
+                    <ListItemIcon>
+                        <CheckIcon />
+                    </ListItemIcon>
+                    <ListItemText inset primary="I'm going!" />
+                </MenuItem>
+                <MenuItem onClick={() => this.handleEventParticipation('NOTGOING')}>
+                    <ListItemIcon>
+                        <NotInterestedIcon />
+                    </ListItemIcon>
+                    <ListItemText inset primary="Not going :(" />
+                </MenuItem>
+            </Menu>
         )
     }
 }
