@@ -52,7 +52,6 @@ class AppBar extends React.Component {
         const { classes, handleToggle, session } = this.props
         const { anchorEl } = this.state
         const open = Boolean(anchorEl)
-        console.log(session.token)
         return (
             <MuiAppBar className={classes.appBar}>
                 <Toolbar>

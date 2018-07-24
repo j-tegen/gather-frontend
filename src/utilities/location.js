@@ -11,16 +11,11 @@ export function getDistanceLocations(fromLocation, toLocation) {
     return R * c
 }
 
-export const getCenterLocations = (locations) => {
-    const center = locations.reduce((firstValue, secondValue) => {
-        return {
-            latitude: (firstValue.latitude + secondValue.latitude) ,/// locations.length,
-            longitude: (firstValue.longitude + secondValue.longitude) ,/// locations.length,
-        }
-    })
-    const lat = center.latitude / locations.length
-    const lng = center.longitude / locations.length
-    return { lat: lat || 0, lng: 0 }
+export const formatShortAddress = (city, street) => {
+    if (city && street) {
+        return `${street}, ${city}`
+    }
+    return city
 }
 
 export const getBounds = (locations) => {

@@ -11,27 +11,35 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle'
 import { withStyles } from '@material-ui/core/styles'
 
 const styles = theme => ({
-    successTitle: {
+    title: {
         textAlign: 'center',
         marginBottom: theme.spacing.unit*2
     },
-    successContent: {
+    content: {
         paddingBottom: '0px',
     },
-    successIcon: {
+    icon: {
         display: 'block',
         marginLeft: 'auto',
         marginRight: 'auto',
         width: '40%',
         fontSize: '80px',
+
+    },
+    primary: {
         color: theme.palette.primary.main,
     },
+    secondary: {
+        color: theme.palette.secondary.main,
+    }
 })
 
-class SuccessAlert extends Component {
+class YesNoAlert extends Component {
     render() {
 
-        const { title, description, handleOk, open, classes } = this.props
+        const { title, description, handleYes, handleNo,  open, , classes } = this.props
+
+        // const iconClass =
         return (
             <Dialog
                 className={classes.root}

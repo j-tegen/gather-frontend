@@ -34,9 +34,7 @@ class EventMap extends Component {
         const bounds = getBounds(events.map(event => event.location))
 
         const {center, zoom } = fitBounds(bounds, { width: this.state.width, height: this.state.height })
-        const uniqueLocations = [... new Set(events.map(event => event.location.googleId))]
-        console.log(uniqueLocations)
-
+        const uniqueLocations = [...new Set(events.map(event => event.location.googleId))]
         // The following is due to random bugs with fitBounds when handling zero or one geopoint :(
         let defaultCenter = {
             lat: center.lat || 40,
@@ -52,8 +50,6 @@ class EventMap extends Component {
             defaultZoom = 13
         }
 
-
-        console.log(defaultZoom, defaultCenter, zoom, center, this.state.height, this.state.width)
         return (
             <div id="event-map" className={classes.mapContainer}>
                 <GoogleMapReact

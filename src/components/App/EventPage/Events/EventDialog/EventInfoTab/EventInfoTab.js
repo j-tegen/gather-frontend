@@ -3,6 +3,7 @@ import { withStyles } from '@material-ui/core/styles'
 import DialogContent from '@material-ui/core/DialogContent'
 import Grid from '@material-ui/core/Grid'
 import InformationBox from '../../../../InformationBox/InformationBox'
+import {formatShortAddress} from 'utilities/location'
 
 const styles = theme => ({
     root: {
@@ -31,7 +32,7 @@ class EventInfoTab extends Component {
 
         const starts = `${startDate} ${startTime.substring(0,5)}`
         const ends = `${endDate || '-'} ${endTime ? endTime.substring(0,5) : ''}`
-        const address = `${street}, ${city}`
+        const address = formatShortAddress(city, street)
         return (
 
             <DialogContent className={classes.root}>

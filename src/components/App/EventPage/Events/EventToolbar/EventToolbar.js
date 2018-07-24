@@ -13,30 +13,19 @@ const styles = {
 }
 
 class EventToolbar extends Component {
-    constructor(props) {
-        super(props)
-        this.state = {
-            showFilters: props.showFilters
-        }
-    }
-
-    toggleShowFilters = () => (event) => {
-        this.setState({ showFilters: event.target.checked })
-        this.props.toggleShowFilters()
-    }
 
     render() {
         return (
             <Toolbar className={this.props.classes.toolbar}>
+
                 <FormControlLabel
                     control={
                         <Checkbox
-                            checked={this.state.showFilters}
-                            onChange={this.toggleShowFilters('myCity')}
-                            value="myCity"
+                            onChange={this.props.toggleShowSettings}
+                            checked={this.props.showSettings}
                         />
                     }
-                    label="Close to me"
+                    label="Show event settings"
                 />
 
             </Toolbar>

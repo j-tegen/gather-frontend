@@ -6,21 +6,21 @@ import Paper from '@material-ui/core/Paper'
 import Button from '@material-ui/core/Button'
 import Grid from '@material-ui/core/Grid'
 import AddIcon from '@material-ui/icons/Add'
-
-import EventList from './EventList/EventList'
-import EventMap from './EventMap/EventMap'
-import EventDialogContainer from './EventDialog/EventDialogContainer'
-import CreateEvent from './CreateEvent/CreateEvent'
-import Loader from '../../Loader/Loader'
-import EventToolbar from './EventToolbar/EventToolbar'
 import BottomNavigation from '@material-ui/core/BottomNavigation'
 import BottomNavigationAction from '@material-ui/core/BottomNavigationAction'
 import StarIcon from '@material-ui/icons/Star'
 import FavoriteIcon from '@material-ui/icons/Favorite'
 import LocationOnIcon from '@material-ui/icons/LocationOn'
 
+import EventToolbar from './EventToolbar/EventToolbar'
+import EventList from './EventList/EventList'
+import EventMap from './EventMap/EventMap'
+import EventDialogContainer from './EventDialog/EventDialogContainer'
+import CreateEvent from './CreateEvent/CreateEvent'
+import EditEventContainer from './EditEvent/EditEventContainer'
+import Loader from '../../Loader/Loader'
 import { EventsQuery } from 'models/event/queries'
-
+import LoadingButton from '../../LoadingButton/LoadingButton'
 
 const styles = theme => ({
     root: {
@@ -56,6 +56,8 @@ class Events extends Component {
 	state = {
 		hoveredEvent: null,
 		selectedEvent: null,
+		loading: false,
+		showFilters: false,
 	}
 
 	handleMouseEnter = (event) => {
@@ -77,20 +79,23 @@ class Events extends Component {
   	render() {
 
 		if (this.props.data && this.props.data.loading) {
-			console.log('Loading events')
 			return <Loader />
 		}
 		if (this.props.data && this.props.data.error) {
 			return <div>Error...</div>
 		}
 		const { data : { events }, classes, session, search, myCity } = this.props
+
+		const sortedEvents = events.concat().sort((a, b) => {
+			return new Date(a.startDate) >= new Date(b.startDate) || new Date(a.startTime) >= new Date(b.startTime)
+		})
     	return (
 			<Grid className={classes.root} container spacing={0}>
 				<Grid className={classes.column} item xs={12} md={7}>
 					<Paper className={classes.paper} elevation={4}>
-					{/* <EventToolbar showFilters={this.props.showFilters} toggleShowFilters={this.props.toggleShowFilters} /> */}
+						<EventToolbar toggleShowSettings={this.props.toggleShowSettings} showSettings={this.props.showSettings}/>
 						<EventList
-							events={events}
+							events={sortedEvents}
 							session={session}
 							hoveredEvent={this.state.hoveredEvent}
 							selectedEvent={this.state.selectedEvent}
@@ -127,6 +132,11 @@ class Events extends Component {
 				<Grid item xs={false}>
 					<Switch>
 						<Route
+							path='/events/:id(\d+)/edit' render={ (props) => (
+								<EditEventContainer {...props} />
+							)}
+						/>
+						<Route
 							path='/events/:id(\d+)' render={ (props) => (
 									<EventDialogContainer
 										selectedEvent={this.state.selectedEvent}
@@ -150,6 +160,6 @@ class Events extends Component {
 export default withStyles(styles)(graphql(
     EventsQuery,
     {
-        options: ({ search, myCity, first, skip }) => ( { variables: { search, first, skip }})
+        options: ({ filterType, locationId, onlyFuture, proximity, first, skip }) => ( { variables: { filterType, locationId, onlyFuture, proximity, first, skip }})
     }
 )(Events))

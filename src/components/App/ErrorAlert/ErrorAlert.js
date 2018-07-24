@@ -11,24 +11,24 @@ import CheckCircleIcon from '@material-ui/icons/CheckCircle'
 import { withStyles } from '@material-ui/core/styles'
 
 const styles = theme => ({
-    successTitle: {
+    errorTitle: {
         textAlign: 'center',
         marginBottom: theme.spacing.unit*2
     },
-    successContent: {
+    errorContent: {
         paddingBottom: '0px',
     },
-    successIcon: {
+    errorIcon: {
         display: 'block',
         marginLeft: 'auto',
         marginRight: 'auto',
         width: '40%',
         fontSize: '80px',
-        color: theme.palette.primary.main,
+        color: theme.palette.secondary.main,
     },
 })
 
-class SuccessAlert extends Component {
+class ErrorAlert extends Component {
     render() {
 
         const { title, description, handleOk, open, classes } = this.props
@@ -40,19 +40,19 @@ class SuccessAlert extends Component {
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
-                <DialogTitle id="alert-success-title">
-                    <CheckCircleIcon className={classes.successIcon} />
+                <DialogTitle id="alert-error-title">
+                    <CheckCircleIcon className={classes.errorIcon} />
                 </DialogTitle>
-                <DialogContent className={classes.successContent}>
-                    <Typography className={classes.successTitle} variant="title" gutterBottom >
+                <DialogContent className={classes.errorContent}>
+                    <Typography className={classes.errorTitle} variant="title" gutterBottom >
                         {title}
                     </Typography>
-                    <DialogContentText id="alert-success-description">
+                    <DialogContentText id="alert-error-description">
                         {description}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleOk} color="primary" autoFocus>
+                    <Button onClick={handleOk} color="secondary" autoFocus>
                         Ok
                     </Button>
                 </DialogActions>
@@ -62,4 +62,4 @@ class SuccessAlert extends Component {
     }
 }
 
-export default withStyles(styles)(SuccessAlert)
+export default withStyles(styles)(ErrorAlert)

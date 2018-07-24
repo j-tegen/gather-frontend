@@ -12,6 +12,17 @@ export const CreateEventMutation = gql `
     ${eventFragment}
 `
 
+export const UpdateEventMutation = gql `
+    mutation UpdateEventMutation($eventData: EventInput!, $locationData: LocationInput!) {
+        updateEvent(eventData: $eventData, locationData: $locationData) {
+            event {
+                ...eventFields
+            }
+        }
+    }
+    ${eventFragment}
+`
+
 export const DeleteEventMutation = gql `
     mutation DeleteEventMutation($id: Int!) {
         deleteEvent(id: $id) {

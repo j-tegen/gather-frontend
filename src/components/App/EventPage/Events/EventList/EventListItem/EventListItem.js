@@ -21,10 +21,6 @@ import { DeleteEventMutation } from 'models/event/mutations'
 import { CreateParticipantMutation, UpdateParticipantMutation } from 'models/participant/mutations'
 import { EventsQuery } from 'models/event/queries'
 
-const updateParticipantCache = (store, mutation) => {
-    const { updateParticipant } = mutation
-
-}
 
 class EventListItem extends Component {
 
@@ -33,7 +29,12 @@ class EventListItem extends Component {
         participant: null,
     }
 
-    handleMenu(event) {
+    handleEditEvent(event) {
+        this.handleCloseMenu()
+        this.props.history.push(`/events/${event.id}/edit`)
+    }
+
+    handleOpenMenu(event) {
         this.setState({ anchorEl: event.currentTarget })
     }
 
@@ -66,7 +67,6 @@ class EventListItem extends Component {
                         variables
                     })
                 }
-
             })
         } catch(e) {
             console.log(e)
@@ -136,12 +136,15 @@ class EventListItem extends Component {
             startTime,
             minParticipants,
             maxParticipants,
-            participants
+            participants,
+            location: {
+                city
+            },
         } = event
 
         const { anchorEl } = this.state
         const open = Boolean(anchorEl)
-        const secondaryText = `${startDate} ${startTime.substring(0,5)}`
+        const secondaryText = `${city} - ${startDate} ${startTime.substring(0,5)}`
         const nbrGoing = participants.filter(participant => participant.status === 'GOING').length
         const tooltip = `${nbrGoing} ${nbrGoing === 1 ? 'is' : 'are'} going to the event for ${minParticipants} to ${maxParticipants} participants!`
         return (
@@ -150,11 +153,12 @@ class EventListItem extends Component {
                     <Avatar>{maxParticipants}</Avatar>
                 </Tooltip>
                 <ListItemText primary={title} secondary={secondaryText} />
+
                 <ListItemSecondaryAction>
                     { session.id &&
                     <IconButton aria-owns={open ? `menu-event-item-${event.id}` : null}
                         aria-haspopup="true"
-                        onClick={this.handleMenu.bind(this)}
+                        onClick={this.handleOpenMenu.bind(this)}
                         color="inherit">
                         <MoreVertIcon />
                     </IconButton>
@@ -190,7 +194,7 @@ class EventListItem extends Component {
                     </ListItemIcon>
                     <ListItemText inset primary="Delete" />
                 </MenuItem>
-                <MenuItem onClick={() => console.log('EDIT!')}>
+                <MenuItem onClick={() => this.handleEditEvent(event)}>
                     <ListItemIcon>
                         <EditIcon />
                     </ListItemIcon>
@@ -241,5 +245,5 @@ class EventListItem extends Component {
 export default withRouter(compose(
     graphql(DeleteEventMutation, { name: 'DeleteEventMutation' }),
     graphql(CreateParticipantMutation, { name: 'CreateParticipantMutation' }),
-    graphql(UpdateParticipantMutation, { name: 'UpdateParticipantMutation', options: { update: (store, { data }) => updateParticipantCache(store, data) }}),
+    graphql(UpdateParticipantMutation, { name: 'UpdateParticipantMutation' }),
 )(EventListItem))

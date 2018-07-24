@@ -1,6 +1,4 @@
 import gql from 'graphql-tag'
-import locationFragment from '../location/fragments'
-import profileFragment from '../profile/fragments'
 import {userFragment} from './fragments'
 
 export const TokenAuthMutation = gql`

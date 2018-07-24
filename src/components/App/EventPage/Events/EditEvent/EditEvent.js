@@ -16,6 +16,7 @@ import Stepper from '@material-ui/core/Stepper'
 import Step from '@material-ui/core/Step'
 import StepLabel from '@material-ui/core/StepLabel'
 import Grid from '@material-ui/core/Grid'
+import Input from '@material-ui/core/Input';
 import InputLabel from '@material-ui/core/InputLabel'
 import MenuItem from '@material-ui/core/MenuItem'
 import FormControl from '@material-ui/core/FormControl'
@@ -24,12 +25,14 @@ import Select from '@material-ui/core/Select'
 import { TimePicker, DatePicker } from 'material-ui-pickers'
 import { format } from 'date-fns/esm'
 
-import { CreateEventMutation } from 'models/event/mutations'
-import { EventsQuery } from 'models/event/queries'
+import { UpdateEventMutation } from 'models/event/mutations'
+import { EventQuery } from 'models/event/queries'
 import { MyLocationsQuery } from 'models/location/queries'
 import LoadingButton from '../../../LoadingButton/LoadingButton'
 import ErrorMessage from '../../../ErrorMessage/ErrorMessage'
+import Loader from '../../../Loader/Loader'
 import { getErrors } from 'utilities/errors'
+import { parseTime } from 'utilities/datetime'
 
 
 
@@ -64,30 +67,53 @@ const styles = theme => ({
 })
 
 
-class CreateEvent extends Component {
+class EditEvent extends Component {
     state = {
-        eventData: {
-            title: '',
-            description: '',
-            startDate: null,
-            endDate: null,
-            startTime: null,
-            endTime: null,
-            eventType: 'Gaming',
-            minParticipants: 0,
-            maxParticipants: 0,
-            tags: [],
-        },
-        locationData: {
-            id: null,
-            street: '',
-            city: '',
-            country: '',
-        },
         activeStep: 0,
         selectedLocation: '',
         loading: false,
         error: '',
+    }
+    componentWillReceiveProps(nextProps) {
+        if(nextProps.data !== this.props.data && !nextProps.data.loading) {
+            const { data: { event }} = nextProps
+            const {
+                id,
+                title,
+                description,
+                startDate,
+                startTime,
+                endDate,
+                endTime,
+                minParticipants,
+                maxParticipants,
+                location: {
+                    country,
+                    street,
+                    city,
+                },
+                tags,
+            } = event
+
+            this.setState({
+                eventData: {
+                    id,
+                    title,
+                    description,
+                    startDate,
+                    startTime: parseTime(startTime),
+                    endDate,
+                    endTime: parseTime(endTime),
+                    minParticipants,
+                    maxParticipants,
+                },
+                locationData: {
+                    country,
+                    city,
+                    street,
+                },
+            })
+        }
     }
 
     handleNext = () => {
@@ -96,7 +122,6 @@ class CreateEvent extends Component {
             ...this.state,
             activeStep: activeStep + 1,
         })
-
     }
 
     checkValidStep = () => {
@@ -170,24 +195,6 @@ class CreateEvent extends Component {
                     eventData,
                     locationData,
                 },
-                update: (store, { data: { createEvent: { event } } }) => {
-                    const variables = {
-                        skip: 0,
-                        first: 10,
-                        search: ''
-                    }
-
-                    const { events } = store.readQuery({
-                        query: EventsQuery,
-                        variables,
-                    })
-
-                    store.writeQuery({
-                        query: EventsQuery,
-                        data: { events: [event, ...events]},
-                        variables,
-                    })
-                }
             })
             this.handleClose()
         } catch(e) {
@@ -197,6 +204,13 @@ class CreateEvent extends Component {
     }
 
     render() {
+        if (this.props.data && this.props.data.loading) {
+			return <Loader />
+		}
+		if (this.props.data && this.props.data.error) {
+			return <div>Error...</div>
+        }
+
         const { classes, myLocationsQuery: { myLocations } } = this.props
         const dialogPaper = this.props.fullScreen ? classes.dialogPaperMobile : classes.dialogPaperDesktop
         const { activeStep } = this.state
@@ -210,7 +224,7 @@ class CreateEvent extends Component {
                     </IconButton>
                     <div className={classes.headerContainer}>
                         <Typography className={classes.dialogTitleText} variant="display1" gutterBottom >
-                            Create event
+                            Update event
                         </Typography>
                     </div>
                 </DialogTitle>
@@ -414,6 +428,10 @@ class CreateEvent extends Component {
 }
 
 export default withRouter(withMobileDialog()(withStyles(styles)(compose(
-        graphql(CreateEventMutation),
+        graphql(EventQuery, {
+                options: ({ id }) => ( { variables: { id }})
+            }
+        ),
+        graphql(UpdateEventMutation),
         graphql(MyLocationsQuery, { name: 'myLocationsQuery' }),
-)(CreateEvent))))
+)(EditEvent))))

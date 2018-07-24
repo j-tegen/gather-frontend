@@ -18,18 +18,18 @@ import Select from '@material-ui/core/Select'
 import InputLabel from '@material-ui/core/InputLabel'
 import MenuItem from '@material-ui/core/MenuItem'
 import CloseIcon from '@material-ui/icons/Close'
-import ErrorIcon from '@material-ui/icons/Error'
 
-import { TimePicker, DatePicker } from 'material-ui-pickers'
+import { DatePicker } from 'material-ui-pickers'
 import { format } from 'date-fns/esm'
 
 import withMobileDialog from '@material-ui/core/withMobileDialog'
 
 import { RegisterMutation } from 'models/user/mutations'
-import { MeQuery } from 'models/user/queries'
 
 import SuccessAlert from '../SuccessAlert/SuccessAlert'
 import ErrorMessage from '../ErrorMessage/ErrorMessage'
+import LoadingButton from '../LoadingButton/LoadingButton'
+import { getErrors } from 'utilities/errors'
 
 const styles = theme => ({
     dialogPaperMobile: {
@@ -79,6 +79,7 @@ class Register extends Component {
         activeStep: 0,
         success: false,
         error: '',
+        loading: false,
     }
 
     handleSuccessOk = () => {
@@ -112,11 +113,11 @@ class Register extends Component {
 
     handleSubmit = async () => {
         try {
+            this.setState({ loading: true })
             const variables = {
                 email: this.state.email,
                 username: this.state.username,
                 password: this.state.password,
-                locationData: this.state.locationData,
                 profileData: {
                     firstName: this.state.firstName,
                     lastName: this.state.lastName,
@@ -129,19 +130,14 @@ class Register extends Component {
                     street: this.state.street,
                 }
             }
-            const response = await this.props.client.mutate({
+            await this.props.client.mutate({
                 mutation: RegisterMutation,
                 variables
             })
             this.handleOpenSuccessAlert()
         } catch(e) {
-            if(e.graphQLErrors) {
-                const errors = e.graphQLErrors.reduce((res, err) => [...res, err.message], [])
-                this.setState({ error: errors.join('. ')})
-            }
-            else {
-                this.setState({ error: e.message })
-            }
+            const error = getErrors(e)
+            this.setState({ error, loading: false })
         }
     }
 
@@ -165,7 +161,7 @@ class Register extends Component {
     checkValidStep = () => {
         switch(this.state.activeStep) {
             case 0: {
-                const { username, email, password, passwordRepeat, firstName, lastName, gender, birthDate } = this.state
+                const { username, email, password, passwordRepeat, firstName, lastName, birthDate } = this.state
                 return username && email && password && firstName && lastName && birthDate && password === passwordRepeat
             }
             case 1: {
@@ -212,10 +208,6 @@ class Register extends Component {
                                 );
                             })}
                         </Stepper>
-                        {
-                            this.state.error &&
-                            <ErrorMessage errorMessage={this.state.error} />
-                        }
                         {activeStep === 0 &&
                             this.renderInformation(classes)
                         }
@@ -223,7 +215,10 @@ class Register extends Component {
                             activeStep === 1 &&
                             this.renderLocation()
                         }
-
+                        {
+                            this.state.error &&
+                            <ErrorMessage errorMessage={this.state.error} />
+                        }
                     </DialogContent>
                     <DialogActions>
                         { activeStep !== 0 &&
@@ -237,9 +232,7 @@ class Register extends Component {
                             </Button>
                         }
                         { activeStep === steps.length - 1 &&
-                            <Button color="primary" type="submit" variant="contained" onClick={this.handleSubmit}>
-                                Save
-                            </Button>
+                            <LoadingButton text="Save" color="primary" type="submit" variant="contained" handleClick={this.handleSubmit} />
                         }
                     </DialogActions>
                 </Dialog>

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { withStyles } from '@material-ui/core/styles'
 import Events from './Events/Events'
+import EventSettings from './EventSettings/EventSettings'
 
 const styles = theme => ({
     root: {
@@ -9,36 +10,70 @@ const styles = theme => ({
 });
 
 
+
 class EventPage extends Component {
     state = {
-        search: '',
-        myCity: false,
+        proximity: 25,
+        filterType: 'NEARBY',
+        onlyFuture: true,
         first: 10,
         skip: 0,
-        showFilters: false,
+        showSettings: false,
     }
 
-    toggleShowFilters() {
+    changeFilter(filterType) {
+        this.setState({ filterType })
+    }
+
+    toggleShowSettings() {
         this.setState({
-            ...this.state,
-            showFilters: !this.state.showFilters
+            showSettings: !this.state.showSettings
+        })
+    }
+
+    handleSaveSettings(settings) {
+        const { proximity, onlyFuture } = settings
+        this.setState({
+            proximity: proximity,
+            onlyFuture: onlyFuture
         })
     }
 
     render() {
-        const { first, skip } = this.state
-        const { session } = this.props
+        const { first, skip, showSettings } = this.state
+        const {
+            session,
+            me: {
+                profile: {
+                    location: {
+                        id: locationId = null
+                    } = {}
+                } = {}
+            } = {}
+        } = this.props
+
+
 
         return (
             <div className={this.props.classes.root}>
                 <Events
                     session={session}
-                    showFilters={this.state.showFilters}
-                    toggleShowFilters={this.toggleShowFilters.bind(this)}
-                    search={this.state.search}
-                    myCity={this.state.myCity}
+                    showSettings={showSettings}
+                    toggleShowSettings={this.toggleShowSettings.bind(this)}
+                    filterType={locationId ? this.state.filterType : 'ALL'}
+                    locationId={locationId}
+                    onlyFuture={this.state.onlyFuture}
+                    proximity={this.state.proximity}
+                    handleChangeFilter={this.handleChangeFilter}
                     first={first}
                     skip={skip} />
+                <EventSettings
+                    open={showSettings}
+                    toggleOpen={this.toggleShowSettings.bind(this)}
+                    handleSaveSettings={this.handleSaveSettings.bind(this)}
+                    proximity={this.state.proximity}
+                    onlyFuture={this.state.onlyFuture}
+                />
             </div>
         )
     }

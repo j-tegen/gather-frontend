@@ -7,7 +7,9 @@ import Login from './Login/Login'
 import Register from './Register/Register'
 import Navigation from './Navigation/Navigation'
 import withTheme from 'utilities/withTheme'
+import { graphql } from 'react-apollo'
 
+import { MeQuery } from 'models/user/queries'
 
 const styles = (theme) => {
     return {
@@ -30,10 +32,13 @@ const styles = (theme) => {
 class App extends Component {
 
   	render() {
-        const { classes } = this.props
+        const { classes, data: {loading, me } } = this.props
         let session = localStorage.getItem('session')
         session = session ? JSON.parse(session) : {}
 
+        if ( loading ) {
+            return <div>Loading</div>
+        }
 		return (
 			<div className={classes.root}>
 				<Navigation openMobile={false} handleDrawerToggle={() => {}} />
@@ -41,7 +46,7 @@ class App extends Component {
 				<main className={classes.content}>
                     <div className={classes.toolbar}></div>
                     <Switch>
-                        <Route path='/events' render={(props) => <EventPage session={session} {...props} />} />
+                        <Route path='/events' render={(props) => <EventPage me={me} session={session} {...props} />} />
                         <Route path='/login' component={Login} />
                         <Route path='/register' component={Register} />
                     </Switch>
@@ -51,4 +56,4 @@ class App extends Component {
   	}
 }
 
-export default withTheme(withStyles(styles)(App))
+export default withTheme(withStyles(styles)(graphql(MeQuery)(App)))

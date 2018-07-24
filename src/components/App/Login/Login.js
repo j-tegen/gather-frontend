@@ -11,11 +11,11 @@ import DialogActions from '@material-ui/core/DialogActions'
 import Button from '@material-ui/core/Button'
 import IconButton from '@material-ui/core/IconButton'
 import CloseIcon from '@material-ui/icons/Close'
-
 import withMobileDialog from '@material-ui/core/withMobileDialog'
 
 import { TokenAuthMutation } from 'models/user/mutations'
 import { MeQuery } from 'models/user/queries'
+import LoadingButton from '../LoadingButton/LoadingButton'
 
 
 const styles = theme => ({
@@ -51,6 +51,7 @@ class Login extends Component {
     state = {
         username: '',
         password: '',
+        loading: false,
     }
 
     handleClose = () => {
@@ -63,6 +64,7 @@ class Login extends Component {
 
     handleSubmit = async () => {
         try {
+            this.setState({loading: true})
             const variables = {
                 username: this.state.username,
                 password: this.state.password,
@@ -71,8 +73,6 @@ class Login extends Component {
                 mutation: TokenAuthMutation,
                 variables
             })
-            console.log(response)
-
             const { token } = response.data.tokenAuth
             localStorage.setItem('session', JSON.stringify({ token: token }))
 
@@ -102,13 +102,12 @@ class Login extends Component {
             this.handleClose()
         } catch(e) {
             localStorage.removeItem('session')
-            console.log(e)
+            this.setState({ loading: false })
         }
     }
 
     render() {
         const { classes } = this.props
-        console.log(this.props)
         const dialogPaper = this.props.fullScreen ? classes.dialogPaperMobile : classes.dialogPaperDesktop
         return (
             <Dialog classes={{ paper: dialogPaper}} fullWidth maxWidth={'sm'} fullScreen={this.props.fullScreen} open onClose={this.handleClose}>
@@ -146,9 +145,12 @@ class Login extends Component {
                     <Button color="primary" onClick={this.handleClose}>
                         Cancel
                         </Button>
-                    <Button color="primary" type="submit" onClick={this.handleSubmit}>
-                        Save
-                    </Button>
+                    <LoadingButton
+                        text="save"
+                        loading={this.state.loading}
+                        color="primary"
+                        type="submit"
+                        handleClick={this.handleSubmit} />
                 </DialogActions>
             </Dialog>
         )
