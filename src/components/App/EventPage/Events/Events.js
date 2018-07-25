@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Switch, Route, Link } from 'react-router-dom'
+import { Switch, Route, Link, withRouter } from 'react-router-dom'
 import { graphql } from 'react-apollo'
 import { withStyles } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
@@ -11,6 +11,7 @@ import BottomNavigationAction from '@material-ui/core/BottomNavigationAction'
 import StarIcon from '@material-ui/icons/Star'
 import FavoriteIcon from '@material-ui/icons/Favorite'
 import LocationOnIcon from '@material-ui/icons/LocationOn'
+
 
 import EventToolbar from './EventToolbar/EventToolbar'
 import EventList from './EventList/EventList'
@@ -32,7 +33,7 @@ const styles = theme => ({
 	},
     paper: {
 		height: '100%',
-		minHeight: '95vh',
+		minHeight: '92vh',
 	},
 	mapContainer: {
 		height: '95%',
@@ -53,27 +54,48 @@ const styles = theme => ({
 
 
 class Events extends Component {
-	state = {
-		hoveredEvent: null,
-		selectedEvent: null,
-		loading: false,
-		showFilters: false,
+	constructor(props) {
+		super(props)
+		this.state = {
+			hoveredEvent: null,
+			selectedEvent: null,
+			loading: false,
+			showFilters: false,
+			activeFilter: props.filterType,
+		}
+	}
+
+
+	componentWillReceiveProps(newProps) {
+		const { session } = newProps
+		if( session !== this.props.session ) {
+			this.setState({
+				activeFilter: session.id ? 'NEARBY' : 'ALL',
+			})
+		}
 	}
 
 	handleMouseEnter = (event) => {
-		this.setState({ ...this.state, hoveredEvent: event })
+		this.setState({ hoveredEvent: event })
 	}
 
 	handleMouseLeave = () => {
-		this.setState({...this.state, hoveredEvent: null })
+		this.setState({ hoveredEvent: null })
 	}
 
 	handleSelectEvent = (event) => {
-		this.setState({ ...this.state, selectedEvent: event})
+		this.setState({ selectedEvent: event})
+		this.props.history.push(`/events/${event.id}`)
 	}
 
 	handleCloseEventCard = () => {
-		this.setState({ ...this.state, selectedEvent: null })
+		this.setState({ selectedEvent: null })
+		this.props.history.push('/events')
+	}
+
+	handleChangeFilter(evt, value) {
+		this.setState({ activeFilter: value })
+		this.props.handleChangeFilter(value)
 	}
 
   	render() {
@@ -102,16 +124,17 @@ class Events extends Component {
 							handleSelectEvent={this.handleSelectEvent}
 							handleMouseEnter={this.handleMouseEnter}
 							handleMouseLeave={this.handleMouseLeave} />
-						<BottomNavigation
-							value={0}
-							// onChange={this.handleChange}
-							showLabels
-							className={classes.bottomNavigation}
-						>
-							<BottomNavigationAction label="Nearby events" icon={<LocationOnIcon />} />
-							<BottomNavigationAction label="Events I've responded to" icon={<StarIcon />} />
-							<BottomNavigationAction label="My events" icon={<FavoriteIcon />} />
-						</BottomNavigation>
+						{ session.id &&
+							<BottomNavigation
+								value={this.state.activeFilter}
+								onChange={this.handleChangeFilter.bind(this)}
+								className={classes.bottomNavigation}
+							>
+								<BottomNavigationAction label="Nearby" value="NEARBY" icon={<LocationOnIcon />} />
+								<BottomNavigationAction label="Responded to" value="GOING" icon={<StarIcon />} />
+								<BottomNavigationAction label="My events" value="MINE" icon={<FavoriteIcon />} />
+							</BottomNavigation>
+						}
 					</Paper>
 
 					{ session.id &&
@@ -126,6 +149,7 @@ class Events extends Component {
 					<EventMap events={events}
 						hoveredEvent={this.state.hoveredEvent}
 						selectedEvent={this.state.selectedEvent}
+						handleSelectEvent={this.handleSelectEvent}
 						handleMouseEnter={this.handleMouseEnter}
 						handleMouseLeave={this.handleMouseLeave} />
 				</Grid>
@@ -133,12 +157,13 @@ class Events extends Component {
 					<Switch>
 						<Route
 							path='/events/:id(\d+)/edit' render={ (props) => (
-								<EditEventContainer {...props} />
+								<EditEventContainer handleClose={this.handleCloseEventCard.bind(this)} {...props} />
 							)}
 						/>
 						<Route
 							path='/events/:id(\d+)' render={ (props) => (
 									<EventDialogContainer
+										handleClose={this.handleCloseEventCard.bind(this)}
 										selectedEvent={this.state.selectedEvent}
 										{...props} />
 								)
@@ -146,6 +171,7 @@ class Events extends Component {
 						<Route
 							path='/events/new' render={(props) => (
 								<CreateEvent
+									handleClose={this.handleCloseEventCard.bind(this)}
 									{...props} />
 							)
 							} />
@@ -157,9 +183,9 @@ class Events extends Component {
 }
 
 
-export default withStyles(styles)(graphql(
+export default withRouter(withStyles(styles)(graphql(
     EventsQuery,
     {
         options: ({ filterType, locationId, onlyFuture, proximity, first, skip }) => ( { variables: { filterType, locationId, onlyFuture, proximity, first, skip }})
     }
-)(Events))
+)(Events)))

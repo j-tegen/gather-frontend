@@ -42,9 +42,10 @@ const EventList = (props) => {
     }
     return (
         <List>
+
             {props.events.map(event => (
                 <EventListItem
-                    hoveredEvent={props.hoveredEvent}
+                    hovered={props.hoveredEvent === event}
                     selectedEvent={props.selectedEvent}
                     handleSelectEvent={props.handleSelectEvent}
                     handleMouseLeave={props.handleMouseLeave}

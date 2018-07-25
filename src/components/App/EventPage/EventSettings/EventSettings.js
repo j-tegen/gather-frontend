@@ -3,6 +3,7 @@ import Toolbar from '@material-ui/core/Toolbar'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Checkbox from '@material-ui/core/Checkbox'
 import Button from '@material-ui/core/Button'
+import Typography from '@material-ui/core/Typography'
 import { SaveIcon } from '@material-ui/icons/Save'
 import Drawer from '@material-ui/core/Drawer'
 import Grid from '@material-ui/core/Grid'
@@ -12,14 +13,25 @@ import { debounce } from 'throttle-debounce'
 
 
 const styles = theme => ({
-    drawer: {
+    root: {
+        width: '50vw',
+        left: '25vw',
+        borderRadiusTopLeft: '6px',
+        borderRadiusTopRight: '6px',
+    },
+    content: {
         minHeight: '200px',
         overflow: 'hidden',
-        width: '100vw',
+        width: '100%',
+        padding: theme.spacing.unit*2,
     },
-    // slider: {
-    //     width:
-    // }
+    actions: {
+        position: 'relative',
+    },
+    saveButton: {
+        position: 'absolute',
+        right: theme.spacing.unit*2
+    }
 })
 
 
@@ -33,7 +45,6 @@ class EventToolbar extends Component {
     }
 
     handleChange(prop, value) {
-
         this.setState({
             [prop]: value,
         })
@@ -46,19 +57,29 @@ class EventToolbar extends Component {
 
     render() {
         const { classes, open, toggleOpen,handleSaveSettings } = this.props
-
         return (
             <Drawer
+                className={classes.root}
                 anchor="bottom"
                 open={this.props.open}
                 onClose={toggleOpen}
             >
-                <Grid className={classes.drawer} container justify="center" spacing={16}>
-                    <Grid item xs={4}>
+                <Grid className={classes.content} container justify="center" spacing={16}>
+                    <Grid item xs={12} md={4}>
+                        <Typography id="label">Nearby event range (km)</Typography>
                         <Slider min={5} max={50} step={1} value={this.state.proximity} onChange={(evt, value) => this.handleChange('proximity', value)} />
-                    </Grid>
-                    <Grid item>
-                        <Button onClick={this.handleSave.bind(this)} color="primary" type="raised">Save</Button>
+                        <FormControlLabel
+                            control={
+                                <Checkbox
+                                    onChange={(evt, value) => this.handleChange('onlyFuture', value)}
+                                    checked={this.state.onlyFuture}
+                                />
+                            }
+                            label="Show only future event"
+                        />
+                        <div className={classes.actions}>
+                            <Button className={classes.saveButton} onClick={this.handleSave.bind(this)} color="primary" type="raised">Save</Button>
+                        </div>
                     </Grid>
                 </Grid>
             </Drawer>

@@ -58,10 +58,6 @@ class EventDialog extends Component {
         this.setState({ ...this.state, tabIndex })
     }
 
-    handleClose = () => {
-        this.props.history.push('/events')
-    }
-
     render() {
         const { data, classes } = this.props
         const { tabIndex } = this.state
@@ -69,7 +65,7 @@ class EventDialog extends Component {
         const dialogPaper = this.props.fullScreen ? classes.dialogPaperMobile : classes.dialogPaperDesktop
         if (this.props.data && this.props.data.loading) {
             return (
-                <Dialog classes={{ paper: dialogPaper }} fullWidth maxWidth={'md'} fullScreen={this.props.fullScreen} open onClose={this.handleClose}>
+                <Dialog classes={{ paper: dialogPaper }} fullWidth maxWidth={'md'} fullScreen={this.props.fullScreen} open onClose={this.props.handleClose}>
                     <Loader />
                 </Dialog>
             )
@@ -81,8 +77,8 @@ class EventDialog extends Component {
 
 
         return (
-            <Dialog classes={{ paper: dialogPaper}} fullWidth maxWidth={'md'} fullScreen={this.props.fullScreen} open onClose={this.handleClose}>
-                <EventDialogTitle event={event} fullScreen={this.props.fullScreen} handleClose={this.handleClose} />
+            <Dialog classes={{ paper: dialogPaper}} fullWidth maxWidth={'md'} fullScreen={this.props.fullScreen} open onClose={this.props.handleClose}>
+                <EventDialogTitle event={event} fullScreen={this.props.fullScreen} handleClose={this.props.handleClose} />
                 <EventInfoBar event={event} />
                 <Tabs centered fullWidth indicatorColor="secondary" value={tabIndex} onChange={this.handleTabChange}>
                     <Tab label="Info" />

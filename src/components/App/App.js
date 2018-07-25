@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Switch, Route } from 'react-router-dom'
 import { withStyles } from '@material-ui/core/styles'
 import EventPage from './EventPage/EventPage'
+import ProfilePage from './ProfilePage/ProfilePage'
 import AppBar from './AppBar/AppBar'
 import Login from './Login/Login'
 import Register from './Register/Register'
@@ -10,6 +11,7 @@ import withTheme from 'utilities/withTheme'
 import { graphql } from 'react-apollo'
 
 import { MeQuery } from 'models/user/queries'
+import YesNoAlert from './YesNoAlert/YesNoAlert'
 
 const styles = (theme) => {
     return {
@@ -47,6 +49,7 @@ class App extends Component {
                     <div className={classes.toolbar}></div>
                     <Switch>
                         <Route path='/events' render={(props) => <EventPage me={me} session={session} {...props} />} />
+                        <Route path='/profile' render={(props) => <ProfilePage profile={me.profile} session={session} {...props} />} />
                         <Route path='/login' component={Login} />
                         <Route path='/register' component={Register} />
                     </Switch>

@@ -49,6 +49,9 @@ const styles = theme => ({
         color: 'white',
         height: '100px',
     },
+    dialogContent: {
+        maxHeight: '500px',
+    },
     headerContainer: {
         marginTop: '40px',
         textAlign: 'center',
@@ -198,7 +201,7 @@ class Register extends Component {
                             </Typography>
                         </div>
                     </DialogTitle>
-                    <DialogContent>
+                    <DialogContent className={classes.dialogContent}>
                         <Stepper activeStep={activeStep}>
                             {steps.map((label) => {
                                 return (

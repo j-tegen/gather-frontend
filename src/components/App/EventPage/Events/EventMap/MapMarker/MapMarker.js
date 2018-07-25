@@ -5,20 +5,20 @@ import LocationOnIcon from '@material-ui/icons/LocationOn'
 
 const styles = (theme) => ({
 	mapMarker: {
-		color: theme.palette.secondary.dark,
 		fontSize: '32px',
 		'&:hover': {
 			color: theme.palette.secondary.main,
-			fontSize: '36px',
+			fontSize: '32px',
+			cursor: 'pointer',
 		}
 	},
 	hovered: {
 		color: theme.palette.secondary.main,
-		fontSize: '36px',
+		fontSize: '32px',
 	},
 	selected: {
 		color: theme.palette.secondary.main,
-		fontSize: '36px',
+		fontSize: '32px',
 	}
 })
 
@@ -27,7 +27,13 @@ class MapMarker extends Component {
 		const { classes, hovered, selected } = this.props
 		const classNames = `${classes.mapMarker} ${hovered ? classes.hovered : ''} ${selected ? classes.selected : ''}`
 		return (
-			<div><LocationOnIcon className={classNames} /></div>
+			<div>
+				<LocationOnIcon
+					onClick={() => this.props.handleSelectEvent(this.props.event)}
+					onMouseEnter={() => this.props.handleMouseEnter(this.props.event)}
+					onMouseLeave={() => this.props.handleMouseLeave()}
+					className={classNames} />
+			</div>
 		)
 	}
 }

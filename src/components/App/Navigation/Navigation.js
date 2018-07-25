@@ -58,7 +58,7 @@ class Navigation extends React.Component {
                             <ListItemText primary="Conversations" />
                         </ListItem>
                     </Link>
-                    <Link className={classes.link} to="/projectexperience" onClick={this.props.handleDrawerToggle}>
+                    <Link className={classes.link} to="/profile" onClick={this.props.handleDrawerToggle}>
                         <ListItem button>
                             <ListItemIcon>
                                 <AccountCircleIcon />

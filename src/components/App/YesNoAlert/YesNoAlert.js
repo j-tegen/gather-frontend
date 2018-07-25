@@ -6,62 +6,51 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Typography from '@material-ui/core/Typography'
-import CheckCircleIcon from '@material-ui/icons/CheckCircle'
 
 import { withStyles } from '@material-ui/core/styles'
 
 const styles = theme => ({
     title: {
         textAlign: 'center',
-        marginBottom: theme.spacing.unit*2
+        color: theme.palette.secondary.main,
     },
     content: {
         paddingBottom: '0px',
-    },
-    icon: {
-        display: 'block',
-        marginLeft: 'auto',
-        marginRight: 'auto',
-        width: '40%',
-        fontSize: '80px',
-
-    },
-    primary: {
-        color: theme.palette.primary.main,
-    },
-    secondary: {
         color: theme.palette.secondary.main,
-    }
+    },
 })
 
 class YesNoAlert extends Component {
     render() {
 
-        const { title, description, handleYes, handleNo,  open, , classes } = this.props
+        const { title, description, handleYes, handleNo, open, classes } = this.props
 
-        // const iconClass =
         return (
             <Dialog
                 className={classes.root}
                 open={open}
-                onClose={handleOk}
+                onClose={handleNo}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
                 <DialogTitle id="alert-success-title">
-                    <CheckCircleIcon className={classes.successIcon} />
-                </DialogTitle>
-                <DialogContent className={classes.successContent}>
-                    <Typography className={classes.successTitle} variant="title" gutterBottom >
+                    <Typography className={classes.title} variant="title" gutterBottom >
                         {title}
                     </Typography>
+                    {/* <PriorityHighIcon className={classes.icon} /> */}
+                </DialogTitle>
+                <DialogContent className={classes.content}>
+
                     <DialogContentText id="alert-success-description">
                         {description}
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleOk} color="primary" autoFocus>
-                        Ok
+                    <Button onClick={handleNo}>
+                        No
+                    </Button>
+                    <Button onClick={handleYes} color="primary" autoFocus>
+                        Yes
                     </Button>
                 </DialogActions>
             </Dialog>
@@ -70,4 +59,4 @@ class YesNoAlert extends Component {
     }
 }
 
-export default withStyles(styles)(SuccessAlert)
+export default withStyles(styles)(YesNoAlert)

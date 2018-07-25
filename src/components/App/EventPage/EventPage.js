@@ -12,17 +12,61 @@ const styles = theme => ({
 
 
 class EventPage extends Component {
-    state = {
-        proximity: 25,
-        filterType: 'NEARBY',
-        onlyFuture: true,
-        first: 10,
-        skip: 0,
-        showSettings: false,
+
+
+    constructor(props) {
+        super(props)
+        const eventFilter = localStorage.getItem('eventFilter')
+
+        const {
+            proximity = 25,
+            onlyFuture = true,
+            first = 10,
+            skip = 0,
+            filterType = 'NEARBY',
+        } = JSON.parse(eventFilter || '{}')
+
+        this.state = {
+            proximity,
+            filterType,
+            onlyFuture,
+            first,
+            skip,
+            showSettings: false,
+        }
+        this.saveFilterCookie()
+    }
+
+    componentDidUpdate() {
+        this.saveFilterCookie()
+    }
+
+    saveFilterCookie() {
+        const {
+            session,
+            me: {
+                profile: {
+                    location: {
+                        id: locationId = null
+                    } = {}
+                } = {}
+            } = {}
+        } = this.props
+
+        localStorage.setItem('eventFilter', JSON.stringify({
+            filterType: this.state.filterType,
+            locationId,
+            proximity: this.state.proximity,
+            onlyFuture: this.state.onlyFuture,
+            first: this.state.first,
+            skip: this.state.skip,
+        }))
     }
 
     changeFilter(filterType) {
-        this.setState({ filterType })
+        this.setState({
+            filterType
+        })
     }
 
     toggleShowSettings() {
@@ -64,7 +108,7 @@ class EventPage extends Component {
                     locationId={locationId}
                     onlyFuture={this.state.onlyFuture}
                     proximity={this.state.proximity}
-                    handleChangeFilter={this.handleChangeFilter}
+                    handleChangeFilter={this.changeFilter.bind(this)}
                     first={first}
                     skip={skip} />
                 <EventSettings

@@ -124,10 +124,6 @@ class CreateEvent extends Component {
         })
     }
 
-    handleClose = () => {
-        this.props.history.push('/events')
-    }
-
     handleChange = (dataSet, prop) => event => {
         const data = { ...this.state[dataSet] }
         data[prop] = event.target.value
@@ -171,16 +167,14 @@ class CreateEvent extends Component {
                     locationData,
                 },
                 update: (store, { data: { createEvent: { event } } }) => {
-                    const variables = {
-                        skip: 0,
-                        first: 10,
-                        search: ''
-                    }
+                    const variables = JSON.parse(localStorage.getItem('eventFilter'))
 
                     const { events } = store.readQuery({
                         query: EventsQuery,
                         variables,
                     })
+                    console.log(variables)
+                    console.log(events)
 
                     store.writeQuery({
                         query: EventsQuery,
@@ -189,7 +183,7 @@ class CreateEvent extends Component {
                     })
                 }
             })
-            this.handleClose()
+            this.props.handleClose()
         } catch(e) {
             const error = getErrors(e)
             this.setState({error, loading: false})
@@ -203,9 +197,9 @@ class CreateEvent extends Component {
         const steps = ['Information', 'Location', 'Confirm']
 
         return (
-            <Dialog classes={{ paper: dialogPaper }} fullWidth maxWidth={'sm'} fullScreen={this.props.fullScreen} open onClose={this.handleClose}>
+            <Dialog classes={{ paper: dialogPaper }} fullWidth maxWidth={'sm'} fullScreen={this.props.fullScreen} open onClose={this.props.handleClose}>
                 <DialogTitle className={classes.dialogTitle}>
-                    <IconButton className={classes.closeButton} onClick={this.handleClose}>
+                    <IconButton className={classes.closeButton} onClick={this.props.handleClose}>
                         <CloseIcon />
                     </IconButton>
                     <div className={classes.headerContainer}>

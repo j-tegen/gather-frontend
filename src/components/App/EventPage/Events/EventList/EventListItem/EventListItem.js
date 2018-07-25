@@ -11,22 +11,38 @@ import MoreVertIcon from '@material-ui/icons/MoreVert'
 import Tooltip from '@material-ui/core/Tooltip'
 import Menu from '@material-ui/core/Menu'
 import MenuItem from '@material-ui/core/MenuItem'
+import Chip from '@material-ui/core/Chip'
 import DeleteForeverIcon from '@material-ui/icons/DeleteForever'
 import StarIcon from '@material-ui/icons/Star'
 import NotInterestedIcon from '@material-ui/icons/NotInterested'
 import CheckIcon from '@material-ui/icons/Check'
 import EditIcon from '@material-ui/icons/Edit'
+import { withStyles } from '@material-ui/core/styles'
+import { toDate } from 'date-fns'
 
 import { DeleteEventMutation } from 'models/event/mutations'
 import { CreateParticipantMutation, UpdateParticipantMutation } from 'models/participant/mutations'
 import { EventsQuery } from 'models/event/queries'
+import YesNoAlert from '../../../../YesNoAlert/YesNoAlert'
 
+const styles = theme => (
+    {
+        oldEvent: {
+            marginRight: theme.spacing.unit*4,
+            color: 'rgba(0,0,0,0.3)'
+        },
+        hovered: {
+            backgroundColor: '#EBEBEB',
+        }
+    }
+)
 
 class EventListItem extends Component {
 
     state = {
         anchorEl: null,
         participant: null,
+        deleteAlertOpen: false,
     }
 
     handleEditEvent(event) {
@@ -42,8 +58,13 @@ class EventListItem extends Component {
         this.setState({ anchorEl: null })
     }
 
-    handleSelectEvent(event) {
-        this.props.history.push(`/events/${event.id}`)
+    handleOpenDeleteAlert() {
+        this.setState({deleteAlertOpen: true})
+    }
+
+    handleCloseDeleteAlert() {
+        this.setState({deleteAlertOpen: false})
+        this.handleCloseMenu()
     }
 
     async handleDelete() {
@@ -54,7 +75,7 @@ class EventListItem extends Component {
                 },
                 update: (store, { data: { deleteEvent: { id } } } ) => {
 
-                    const variables = { first: 10, skip: 0, search: '' }
+                    const variables = JSON.parse(localStorage.getItem('eventFilter'))
 
                     const { events } = store.readQuery({
                         query: EventsQuery,
@@ -128,7 +149,7 @@ class EventListItem extends Component {
     }
 
     render() {
-        const { event, session } = this.props
+        const { classes, event, session, hovered } = this.props
 
         const {
             title,
@@ -146,30 +167,45 @@ class EventListItem extends Component {
         const open = Boolean(anchorEl)
         const secondaryText = `${city} - ${startDate} ${startTime.substring(0,5)}`
         const nbrGoing = participants.filter(participant => participant.status === 'GOING').length
-        const tooltip = `${nbrGoing} ${nbrGoing === 1 ? 'is' : 'are'} going to the event for ${minParticipants} to ${maxParticipants} participants!`
+        const tooltip = `${nbrGoing} ${nbrGoing === 1 ? 'is' : 'are'} going to this event for ${minParticipants} to ${maxParticipants} participants!`
         return (
-            <ListItem onClick={() => this.handleSelectEvent(event)} onMouseEnter={() => this.props.handleMouseEnter(event)} onMouseLeave={() => this.props.handleMouseLeave()} button>
-                <Tooltip title={tooltip} placement="right">
-                    <Avatar>{maxParticipants}</Avatar>
-                </Tooltip>
-                <ListItemText primary={title} secondary={secondaryText} />
+            <div>
+                <ListItem className={hovered && classes.hovered} onClick={() => this.props.handleSelectEvent(event)} onMouseEnter={() => this.props.handleMouseEnter(event)} onMouseLeave={() => this.props.handleMouseLeave()} button>
+                    <Tooltip title={tooltip} placement="right">
+                        <Avatar>{maxParticipants}</Avatar>
+                    </Tooltip>
+                    <ListItemText primary={title} secondary={secondaryText} />
+                    { toDate(event.startDate) < new Date() && <Chip label="Old event" className={classes.oldEvent} /> }
+                    <ListItemSecondaryAction>
+                        { session.id &&
+                        <IconButton aria-owns={open ? `menu-event-item-${event.id}` : null}
+                            aria-haspopup="true"
+                            onClick={this.handleOpenMenu.bind(this)}
+                            color="inherit">
+                            <MoreVertIcon />
+                        </IconButton>
+                        }
+                        {
+                            session.id === event.organizer.id
+                            ? this.renderOrganizerList(event, anchorEl, open)
+                            : this.renderUserList(event, anchorEl, open)
+                        }
+                    </ListItemSecondaryAction>
+                </ListItem>
+                {this.renderDeleteAlert()}
+            </div>
+        )
+    }
 
-                <ListItemSecondaryAction>
-                    { session.id &&
-                    <IconButton aria-owns={open ? `menu-event-item-${event.id}` : null}
-                        aria-haspopup="true"
-                        onClick={this.handleOpenMenu.bind(this)}
-                        color="inherit">
-                        <MoreVertIcon />
-                    </IconButton>
-                    }
-                    {
-                        session.id === event.organizer.id
-                        ? this.renderOrganizerList(event, anchorEl, open)
-                        : this.renderUserList(event, anchorEl, open)
-                    }
-                </ListItemSecondaryAction>
-            </ListItem>
+    renderDeleteAlert() {
+        return (
+            <YesNoAlert
+                open={this.state.deleteAlertOpen}
+                title="Are you sure?"
+                description="This will permanently delete this event"
+                handleYes={this.handleDelete.bind(this)}
+                handleNo={this.handleCloseDeleteAlert.bind(this)}
+            />
         )
     }
 
@@ -188,7 +224,7 @@ class EventListItem extends Component {
                 }}
                 open={open}
                 onClose={this.handleCloseMenu.bind(this)}>
-                <MenuItem onClick={this.handleDelete.bind(this)}>
+                <MenuItem onClick={this.handleOpenDeleteAlert.bind(this)}>
                     <ListItemIcon>
                         <DeleteForeverIcon />
                     </ListItemIcon>
@@ -242,8 +278,8 @@ class EventListItem extends Component {
     }
 }
 
-export default withRouter(compose(
+export default withRouter(withStyles(styles)(compose(
     graphql(DeleteEventMutation, { name: 'DeleteEventMutation' }),
     graphql(CreateParticipantMutation, { name: 'CreateParticipantMutation' }),
     graphql(UpdateParticipantMutation, { name: 'UpdateParticipantMutation' }),
-)(EventListItem))
+)(EventListItem)))

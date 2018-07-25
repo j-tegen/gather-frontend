@@ -149,9 +149,6 @@ class EditEvent extends Component {
         })
     }
 
-    handleClose = () => {
-        this.props.history.push('/events')
-    }
 
     handleChange = (dataSet, prop) => event => {
         const data = { ...this.state[dataSet] }
@@ -196,7 +193,7 @@ class EditEvent extends Component {
                     locationData,
                 },
             })
-            this.handleClose()
+            this.props.handleClose()
         } catch(e) {
             const error = getErrors(e)
             this.setState({error, loading: false})
@@ -217,9 +214,9 @@ class EditEvent extends Component {
         const steps = ['Information', 'Location', 'Confirm']
 
         return (
-            <Dialog classes={{ paper: dialogPaper }} fullWidth maxWidth={'sm'} fullScreen={this.props.fullScreen} open onClose={this.handleClose}>
+            <Dialog classes={{ paper: dialogPaper }} fullWidth maxWidth={'sm'} fullScreen={this.props.fullScreen} open onClose={this.props.handleClose}>
                 <DialogTitle className={classes.dialogTitle}>
-                    <IconButton className={classes.closeButton} onClick={this.handleClose}>
+                    <IconButton className={classes.closeButton} onClick={this.props.handleClose}>
                         <CloseIcon />
                     </IconButton>
                     <div className={classes.headerContainer}>
