@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom'
 import Hidden from '@material-ui/core/Hidden'
 import { withStyles } from '@material-ui/core/styles'
 import Drawer from '@material-ui/core/Drawer'
+import IconButton from '@material-ui/core/IconButton'
 import List from '@material-ui/core/List';
 import ListItem from '@material-ui/core/ListItem';
 import ListItemIcon from '@material-ui/core/ListItemIcon';
@@ -11,6 +12,7 @@ import HomeIcon from '@material-ui/icons/Home'
 import AccountCircleIcon from '@material-ui/icons/AccountCircle'
 import MessageIcon from '@material-ui/icons/Message'
 import EventIcon from '@material-ui/icons/Event'
+import ArrowBackIcon from '@material-ui/icons/ArrowBack'
 
 const drawerWidth = 320
 
@@ -25,6 +27,11 @@ const styles = theme => ({
     link: {
         textDecoration: 'none',
     },
+    closeButton: {
+        position: 'absolute',
+        right: theme.spacing.unit,
+        top: theme.spacing.unit,
+    }
 })
 
 class Navigation extends React.Component {
@@ -84,6 +91,10 @@ class Navigation extends React.Component {
                             keepMounted: true, // Better open performance on mobile.
                         }}
                     >
+                        <IconButton className={classes.closeButton} onClick={this.props.handleDrawerToggle}>
+                            <ArrowBackIcon />
+
+                        </IconButton>
                         {drawer}
                     </Drawer>
                 </Hidden>

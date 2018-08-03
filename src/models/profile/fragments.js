@@ -6,8 +6,13 @@ import locationFragment from '../location/fragments'
 export const profileFragment = gql`
     fragment profileFields on ProfileType {
         id
+        profilePicture
         firstName
         lastName
+        description
+        gender
+        birthDate
+        email
         friends {
             ...friendshipFields
         }

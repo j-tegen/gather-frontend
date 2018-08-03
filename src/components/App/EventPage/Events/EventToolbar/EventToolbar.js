@@ -1,10 +1,9 @@
 import React, { Component } from 'react'
 import Toolbar from '@material-ui/core/Toolbar'
 import IconButton from '@material-ui/core/IconButton'
-import FormControlLabel from '@material-ui/core/FormControlLabel'
-import Checkbox from '@material-ui/core/Checkbox'
 import { withStyles } from '@material-ui/core/styles'
 import MapIcon from '@material-ui/icons/Map'
+import FilterListIcon from '@material-ui/icons/FilterList'
 
 const styles = theme => ({
     toolbar: {
@@ -22,15 +21,9 @@ class EventToolbar extends Component {
     render() {
         return (
             <Toolbar className={this.props.classes.toolbar}>
-                <FormControlLabel
-                    control={
-                        <Checkbox
-                            onChange={this.props.toggleShowSettings}
-                            checked={this.props.showSettings}
-                        />
-                    }
-                    label="Show event settings"
-                />
+                <IconButton onClick={this.props.toggleShowSettings}>
+                    < FilterListIcon />
+                </IconButton>
                 <IconButton className={this.props.classes.mapButton}>
                     <MapIcon />
                 </IconButton>

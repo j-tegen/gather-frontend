@@ -3,12 +3,12 @@ import List from '@material-ui/core/List'
 import EventListItem from './EventListItem/EventListItem'
 import EventIcon from '@material-ui/icons/Event'
 import Typography from '@material-ui/core/Typography'
-
 import { withStyles } from '@material-ui/core/styles'
+
+import EmptyState from '../../../EmptyState/EmptyState'
 
 const styles = theme => ({
     emptyStateIcon: {
-        // position: 'absolute',
         marginLeft: 'auto',
         marginRight: 'auto',
         fontSize: '160px',
@@ -17,7 +17,6 @@ const styles = theme => ({
         marginTop: '20vh',
     },
     emptyStateText: {
-        // position: 'absolute',
         marginLeft: 'auto',
         marginRight: 'auto',
         width: '100%',
@@ -29,15 +28,10 @@ const EventList = (props) => {
 
     if (props.events.length === 0) {
         return (
-            <div>
-                <EventIcon className={props.classes.emptyStateIcon} />
-                <Typography className={props.classes.emptyStateText} variant="title" gutterBottom >
-                    No events match your search :(
-                </Typography>
-                <Typography className={props.classes.emptyStateText} variant="body2" gutterBottom >
-                    Try widen your search a little or create your own event!
-                </Typography>
-            </div>
+            <EmptyState
+                icon={<EventIcon />}
+                header="No events match your search :("
+                subheader="Try widen your search a little or create your own event!" />
         )
     }
     return (

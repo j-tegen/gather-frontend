@@ -7,6 +7,7 @@ export const friendshipFragment = gql`
         status
         profiles {
             id
+            profilePicture
             firstName
             lastName
         }

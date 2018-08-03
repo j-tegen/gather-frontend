@@ -16,7 +16,7 @@ import Stepper from '@material-ui/core/Stepper'
 import Step from '@material-ui/core/Step'
 import StepLabel from '@material-ui/core/StepLabel'
 import Grid from '@material-ui/core/Grid'
-import Input from '@material-ui/core/Input';
+
 import InputLabel from '@material-ui/core/InputLabel'
 import MenuItem from '@material-ui/core/MenuItem'
 import FormControl from '@material-ui/core/FormControl'
@@ -92,7 +92,6 @@ class EditEvent extends Component {
                     street,
                     city,
                 },
-                tags,
             } = event
 
             this.setState({

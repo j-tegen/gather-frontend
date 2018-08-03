@@ -9,6 +9,7 @@ export const EventsQuery = gql`
     }
     ${eventFragment}
 `
+
 export const EventQuery = gql`
 	query EventQuery($id: Int!) {
 		event(id: $id) {

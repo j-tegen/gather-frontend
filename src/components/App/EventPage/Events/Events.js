@@ -21,7 +21,6 @@ import CreateEvent from './CreateEvent/CreateEvent'
 import EditEventContainer from './EditEvent/EditEventContainer'
 import Loader from '../../Loader/Loader'
 import { EventsQuery } from 'models/event/queries'
-import LoadingButton from '../../LoadingButton/LoadingButton'
 
 const styles = theme => ({
     root: {
@@ -106,7 +105,7 @@ class Events extends Component {
 		if (this.props.data && this.props.data.error) {
 			return <div>Error...</div>
 		}
-		const { data : { events }, classes, session, search, myCity } = this.props
+		const { data : { events }, classes, session } = this.props
 
 		const sortedEvents = events.concat().sort((a, b) => {
 			return new Date(a.startDate) >= new Date(b.startDate) || new Date(a.startTime) >= new Date(b.startTime)
@@ -131,8 +130,8 @@ class Events extends Component {
 								className={classes.bottomNavigation}
 							>
 								<BottomNavigationAction label="Nearby" value="NEARBY" icon={<LocationOnIcon />} />
-								<BottomNavigationAction label="Responded to" value="GOING" icon={<StarIcon />} />
-								<BottomNavigationAction label="My events" value="MINE" icon={<FavoriteIcon />} />
+								<BottomNavigationAction label="Responded to" value="GOING" icon={<FavoriteIcon />} />
+								<BottomNavigationAction label="My events" value="MINE" icon={<StarIcon />} />
 							</BottomNavigation>
 						}
 					</Paper>

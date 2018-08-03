@@ -43,7 +43,6 @@ class EventPage extends Component {
 
     saveFilterCookie() {
         const {
-            session,
             me: {
                 profile: {
                     location: {

@@ -20,12 +20,13 @@ class LoadingButton extends Component {
             color = 'primary',
             handleClick,
             type = 'button',
+            className,
         } = this.props
         const whiteLoader = ['contained', 'raised'].indexOf(variant) > -1
         const loaderClass = whiteLoader ? classes.whiteLoader : ''
 
         return (
-            <div>
+            <div className={className}>
                 {
                     !loading &&
                     <Button

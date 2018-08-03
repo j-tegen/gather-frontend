@@ -11,7 +11,6 @@ import withTheme from 'utilities/withTheme'
 import { graphql } from 'react-apollo'
 
 import { MeQuery } from 'models/user/queries'
-import YesNoAlert from './YesNoAlert/YesNoAlert'
 
 const styles = (theme) => {
     return {
@@ -32,6 +31,13 @@ const styles = (theme) => {
 }
 
 class App extends Component {
+    state = {
+        openMobile: false,
+    }
+
+    handleDrawerToggle() {
+        this.setState({ openMobile: !this.state.openMobile })
+    }
 
   	render() {
         const { classes, data: {loading, me } } = this.props
@@ -43,13 +49,13 @@ class App extends Component {
         }
 		return (
 			<div className={classes.root}>
-				<Navigation openMobile={false} handleDrawerToggle={() => {}} />
-				<AppBar session={session} handleToggle={() => {}} />
+				<Navigation openMobile={this.state.openMobile} toggleMobile={this.state.openMobile} handleDrawerToggle={this.handleDrawerToggle.bind(this)} />
+				<AppBar session={session} handleToggle={this.handleDrawerToggle.bind(this)} />
 				<main className={classes.content}>
                     <div className={classes.toolbar}></div>
                     <Switch>
                         <Route path='/events' render={(props) => <EventPage me={me} session={session} {...props} />} />
-                        <Route path='/profile' render={(props) => <ProfilePage profile={me.profile} session={session} {...props} />} />
+                        <Route path='/profile' render={(props) => <ProfilePage user={me} session={session} {...props} />} />
                         <Route path='/login' component={Login} />
                         <Route path='/register' component={Register} />
                     </Switch>

@@ -1,15 +1,12 @@
 import React, { Component } from 'react'
-import Toolbar from '@material-ui/core/Toolbar'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Checkbox from '@material-ui/core/Checkbox'
 import Button from '@material-ui/core/Button'
 import Typography from '@material-ui/core/Typography'
-import { SaveIcon } from '@material-ui/icons/Save'
 import Drawer from '@material-ui/core/Drawer'
 import Grid from '@material-ui/core/Grid'
 import { withStyles } from '@material-ui/core/styles'
 import Slider from '@material-ui/lab/Slider'
-import { debounce } from 'throttle-debounce'
 
 
 const styles = theme => ({
@@ -56,7 +53,7 @@ class EventToolbar extends Component {
     }
 
     render() {
-        const { classes, open, toggleOpen,handleSaveSettings } = this.props
+        const { classes, toggleOpen } = this.props
         return (
             <Drawer
                 className={classes.root}

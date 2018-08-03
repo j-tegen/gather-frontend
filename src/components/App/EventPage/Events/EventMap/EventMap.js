@@ -54,8 +54,8 @@ class EventMap extends Component {
             <div id="event-map" className={classes.mapContainer}>
                 <GoogleMapReact
                     bootstrapURLKeys={{key: googleMapsKey}}
-                    defaultCenter={defaultCenter}
-                    defaultZoom={defaultZoom}
+                    center={defaultCenter}
+                    zoom={defaultZoom}
                 >
                 {events.map((event) => {
                     const { location } = event

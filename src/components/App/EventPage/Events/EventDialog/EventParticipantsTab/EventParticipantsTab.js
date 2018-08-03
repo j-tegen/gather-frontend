@@ -17,9 +17,10 @@ class EventParticipantsTab extends Component {
         if ( edit ){
             return <div>TBI</div>
         }
+
         return (
             <DialogContent className={classes.root}>
-
+                {event.participants.length}
             </DialogContent>
         )
     }

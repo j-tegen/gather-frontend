@@ -333,6 +333,7 @@ class CreateEvent extends Component {
                             clearable
                             required
                             fullWidth
+                            format="YYYY-MM-DD"
                             margin="normal"
                             value={this.state.eventData.startDate}
                             onChange={this.handleChangeTime('eventData', 'startDate')}
@@ -356,6 +357,7 @@ class CreateEvent extends Component {
                     <Grid className={classes.column} item xs={6}>
                         <DatePicker
                             label="End date"
+                            format = "YYYY-MM-DD"
                             clearable
                             fullWidth
                             margin="normal"

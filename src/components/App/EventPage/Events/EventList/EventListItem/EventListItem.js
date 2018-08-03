@@ -170,7 +170,7 @@ class EventListItem extends Component {
         const tooltip = `${nbrGoing} ${nbrGoing === 1 ? 'is' : 'are'} going to this event for ${minParticipants} to ${maxParticipants} participants!`
         return (
             <div>
-                <ListItem className={hovered && classes.hovered} onClick={() => this.props.handleSelectEvent(event)} onMouseEnter={() => this.props.handleMouseEnter(event)} onMouseLeave={() => this.props.handleMouseLeave()} button>
+                <ListItem className={hovered ? classes.hovered : ''} onClick={() => this.props.handleSelectEvent(event)} onMouseEnter={() => this.props.handleMouseEnter(event)} onMouseLeave={() => this.props.handleMouseLeave()} button>
                     <Tooltip title={tooltip} placement="right">
                         <Avatar>{maxParticipants}</Avatar>
                     </Tooltip>

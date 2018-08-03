@@ -1,16 +1,17 @@
 import React, { Component } from 'react'
+import { graphql } from 'react-apollo'
 import Button from '@material-ui/core/Button'
 import Dialog from '@material-ui/core/Dialog'
 import DialogActions from '@material-ui/core/DialogActions'
 import DialogContent from '@material-ui/core/DialogContent'
-import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
-import Typography from '@material-ui/core/Typography'
-import CheckCircleIcon from '@material-ui/icons/CheckCircle'
 import ReactCrop, { makeAspectCrop } from 'react-image-crop'
 import 'react-image-crop/dist/ReactCrop.css'
-
 import { withStyles } from '@material-ui/core/styles'
+
+import LoadingButton from '../LoadingButton/LoadingButton'
+import { ProfilePictureMutation } from 'models/profile/mutations'
+import { MeQuery } from 'models/user/queries'
 
 const styles = theme => ({
     title: {
@@ -41,11 +42,24 @@ class ImageUpload extends Component {
             height: 80,
             aspect: 1 / 1,
         },
-        croppedImage: null,
+        imageWidth: null,
+        imageHeight: null,
+        file: null,
+        loading: false,
     }
 
     handleSelectFile = (e) => {
         if (e.target.files && e.target.files.length > 0) {
+            const url = URL.createObjectURL(e.target.files[0])
+            const img = new Image();
+            img.onload = () => {
+                this.setState({
+                    imageWidth: img.width,
+                    imageHeight: img.height,
+                })
+            }
+            img.src = url
+
             const reader = new FileReader()
             reader.addEventListener(
                 'load',
@@ -56,6 +70,9 @@ class ImageUpload extends Component {
                 false
             )
             reader.readAsDataURL(e.target.files[0])
+            this.setState({
+                file: e.target.files[0]
+            })
         }
     }
 
@@ -73,52 +90,55 @@ class ImageUpload extends Component {
                 aspect: 1 / 1,
                 width: 50,
             }, image.width / image.height),
+            imageHeight: image.height,
+            imageWidth: image.width,
         })
     }
 
-    onCropComplete = async crop => {
-        const croppedImage = await this.getCroppedImg(new Image(), crop, "profile_picture.png")
-        this.setState({croppedImage})
-    }
 
-    _openFileDialog () {
-        var fileUploadDom = React.findDOMNode(this.refs.fileUpload)
-        fileUploadDom.click()
-    }
+    async saveImage() {
+        try {
+            this.setState({ loading: true })
+            const crop = {
+                x0: (this.state.imageWidth * this.state.crop.x) / 100,
+                x1: this.state.imageWidth * (this.state.crop.x + this.state.crop.width) / 100,
+                y0: this.state.imageHeight * this.state.crop.y / 100,
+                y1: this.state.imageHeight * (this.state.crop.y + this.state.crop.height) / 100,
 
-    getCroppedImg(image, pixelCrop, fileName) {
+            }
+            await this.props.mutate({
+                variables: {
+                    profileId: this.props.profile.id,
+                    file: this.state.file,
+                    crop,
+                }, update: (store, { data: { profilePicture: { profile } } }) => {
 
-        const canvas = document.createElement('canvas')
-        canvas.width = pixelCrop.width
-        canvas.height = pixelCrop.height
-        const ctx = canvas.getContext('2d')
+                    const { me } = store.readQuery({
+                        query: MeQuery,
+                    })
 
-        ctx.drawImage(
-            image,
-            pixelCrop.x,
-            pixelCrop.y,
-            pixelCrop.width,
-            pixelCrop.height,
-            0,
-            0,
-            pixelCrop.width,
-            pixelCrop.height
-        )
+                    me.profile.profilePicture = profile.profilePicture
 
-        return new Promise((resolve, reject) => {
-            canvas.toBlob(file => {
-                file.name = fileName
-                resolve(file)
-            }, 'image/png')
-        })
+                    store.writeQuery({
+                        query: MeQuery,
+                        data: { me: me},
+                    })
+                    this.setState({ loading: false })
+                    this.props.handleClose()
+                }
+            })
+        } catch(e) {
+            this.setState({ loading: false })
+            console.log(e)
+        }
     }
 
     render() {
-        const { title, handleOk, handleCancel, open, classes } = this.props
+        const { title, handleClose, open, classes } = this.props
         return (
             <Dialog
                 open={open}
-                onClose={handleCancel}
+                onClose={handleClose}
                 aria-labelledby="alert-dialog-title"
                 aria-describedby="alert-dialog-description"
             >
@@ -132,21 +152,24 @@ class ImageUpload extends Component {
                         src={this.state.src}
                         crop={this.state.crop}
                         onImageLoaded={this.onImageLoaded}
-                        onComplete={this.onCropComplete}
                         onChange={this.onCropChange}
                     />
                     )
                 }
-
                 </DialogContent>
                 <DialogActions>
                     { this.renderFileInput() }
-                    <Button onClick={handleCancel}>
+                    <Button onClick={handleClose}>
                         Cancel
                     </Button>
-                    <Button onClick={handleOk} color="primary" autoFocus>
-                        Upload
-                    </Button>
+                    <LoadingButton
+                        text="Save"
+                        color="primary"
+                        type="submit"
+                        variant="flat"
+                        disabled={!this.state.src}
+                        loading={this.state.loading}
+                        handleClick={this.saveImage.bind(this)} />
                 </DialogActions>
             </Dialog>
 
@@ -173,4 +196,4 @@ class ImageUpload extends Component {
     }
 }
 
-export default withStyles(styles)(ImageUpload)
+export default withStyles(styles)(graphql(ProfilePictureMutation)(ImageUpload))
