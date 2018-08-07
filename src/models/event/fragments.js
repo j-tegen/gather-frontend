@@ -52,4 +52,11 @@ const eventfragment = gql`
     ${tagFragment}
 `
 
+export const basicEventFragment = gql`
+    fragment basicEventFields on EventType {
+        id
+        title
+    }
+`
+
 export default eventfragment

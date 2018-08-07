@@ -27,6 +27,13 @@ const styles = theme => ({
         height: '250px',
         cursor: 'pointer',
     },
+    avatarIcon: {
+        border: `${theme.spacing.unit * 2}px solid ${theme.palette.primary.main}`,
+        fontSize: 218,
+        borderRadius: '50%',
+        backgroundColor: theme.palette.primary.main,
+        color: 'white',
+    },
     avatarImage: {
         width: '100%',
         height: '100%',
@@ -39,13 +46,19 @@ const styles = theme => ({
     coloredBar: {
         position: 'absolute',
         color: 'white',
-        left: theme.spacing.unit,
+        left: theme.spacing.unit * 2,
         right: theme.spacing.unit,
-        top: 0,
+        top: theme.spacing.unit * 2,
         height: 250,
         backgroundColor: theme.palette.primary.main,
         paddingTop: 210,
         paddingLeft: theme.spacing.unit * 2,
+        paddingRight: theme.spacing.unit * 2,
+        borderTopRightRadius: 4,
+        borderTopLeftRadius: 4,
+        '&.mobile': {
+            right: theme.spacing.unit * 2,
+        }
     },
     infoLink: {
         color: 'white',
@@ -86,7 +99,8 @@ class ProfileHeader extends Component {
     render() {
         const {
             profile,
-            classes
+            mobile,
+            classes,
         } = this.props
 
         const fullName = `${profile.firstName} ${profile.lastName}`
@@ -94,18 +108,18 @@ class ProfileHeader extends Component {
         return (
 
             <div className={classes.profileHeader}>
-                <div className={classes.coloredBar}>
-                    <a href={`mailto:${profile.email}`} className={classes.infoLink}>
+                <div className={`${classes.coloredBar} ${mobile ? 'mobile' : ''}`}>
+                    { !mobile && <a href={`mailto:${profile.email}`} className={classes.infoLink}>
                         <EmailIcon />
                         <Typography className={classes.infoLink} variant="body1" gutterBottom >
                             {profile.email}
                         </Typography>
-                    </a>
+                    </a>}
                 </div>
                 <div className={classes.row}>
                     <IconButton onClick={this.handleOpenImageUpload.bind(this)} className={classes.avatar}>
                         { !profile.profilePicture &&
-                        <AccountCircleIcon className={classes.avatarImage} />
+                        <AccountCircleIcon className={classes.avatarIcon} />
                         }
                         { profile.profilePicture &&
                             <Avatar src={profile.profilePicture} className={classes.avatarImage} />

@@ -122,36 +122,39 @@ class Login extends Component {
                         </Typography>
                     </div>
                 </DialogTitle>
-                <DialogContent>
-                    <TextField
-                        id="username"
-                        label="Username"
-                        fullWidth
-                        value={this.state.username}
-                        onChange={this.handleChange('username')}
-                        margin="normal"
-                    />
-                    <TextField
-                        id="password"
-                        label="Password"
-                        fullWidth
-                        type="password"
-                        value={this.state.password}
-                        onChange={this.handleChange('password')}
-                        margin="normal"
-                    />
-                </DialogContent>
-                <DialogActions>
-                    <Button color="primary" onClick={this.handleClose}>
-                        Cancel
-                        </Button>
-                    <LoadingButton
-                        text="save"
-                        loading={this.state.loading}
-                        color="primary"
-                        type="submit"
-                        handleClick={this.handleSubmit} />
-                </DialogActions>
+                <form>
+                    <DialogContent>
+                        <TextField
+                            id="username"
+                            label="Username"
+                            fullWidth
+                            autoFocus
+                            value={this.state.username}
+                            onChange={this.handleChange('username')}
+                            margin="normal"
+                        />
+                        <TextField
+                            id="password"
+                            label="Password"
+                            fullWidth
+                            type="password"
+                            value={this.state.password}
+                            onChange={this.handleChange('password')}
+                            margin="normal"
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button color="primary" onClick={this.handleClose}>
+                            Cancel
+                            </Button>
+                        <LoadingButton
+                            text="save"
+                            loading={this.state.loading}
+                            color="primary"
+                            type="submit"
+                            handleClick={this.handleSubmit} />
+                    </DialogActions>
+                </form>
             </Dialog>
         )
     }

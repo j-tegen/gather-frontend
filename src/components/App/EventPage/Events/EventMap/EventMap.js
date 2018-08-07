@@ -3,15 +3,19 @@ import { withStyles } from '@material-ui/core/styles'
 import GoogleMapReact from 'google-map-react'
 import { fitBounds } from 'google-map-react/utils'
 import MapMarker from './MapMarker/MapMarker'
+import MeMarker from './MeMarker/MeMarker'
 import { getBounds } from 'utilities/location'
 import { googleMapsKey } from 'env'
 
 
-const styles = theme => ({
+const styles = () => ({
 	mapContainer: {
-		height: '95%',
+		height: '100%',
 		width: '100%',
-	}
+    },
+    hoveredMarked: {
+        zIndex: 10,
+    }
 })
 
 class EventMap extends Component {
@@ -30,38 +34,46 @@ class EventMap extends Component {
     }
 
     render () {
-        const { events, classes } = this.props
-        const bounds = getBounds(events.map(event => event.location))
+        const { events, classes, myLocation } = this.props
+        let center = { lat: 40, lng: 8 }
+        let zoom = 2
+        const uniqueLocations = [myLocation,...new Set(events.map(event => event.location.googleId))]
 
-        const {center, zoom } = fitBounds(bounds, { width: this.state.width, height: this.state.height })
-        const uniqueLocations = [...new Set(events.map(event => event.location.googleId))]
-        // The following is due to random bugs with fitBounds when handling zero or one geopoint :(
-        let defaultCenter = {
-            lat: center.lat || 40,
-            lng: center.lng || 10
-        }
-        let defaultZoom = zoom || 0
-
-        if (uniqueLocations.length === 1) {
-            defaultCenter = {
+        if (uniqueLocations.length > 1) {
+            const locations = [myLocation, ...events.map(event => event.location)]
+            const bounds = getBounds(locations)
+            const newBounds = fitBounds(bounds, { width: this.state.width, height: this.state.height })
+            center = newBounds.center
+            zoom = newBounds.zoom
+        } else if (!myLocation && uniqueLocations.length === 1) {
+            center = {
                 lat: events[0].location.latitude,
                 lng: events[0].location.longitude
             }
-            defaultZoom = 13
+            zoom = 13
+        } else if(myLocation && uniqueLocations.length === 1) {
+            center = {
+                lat: myLocation.latitude,
+                lng: myLocation.longitude,
+            }
+            zoom = 13
         }
 
         return (
             <div id="event-map" className={classes.mapContainer}>
                 <GoogleMapReact
                     bootstrapURLKeys={{key: googleMapsKey}}
-                    center={defaultCenter}
-                    zoom={defaultZoom}
+                    defaultCenter={center}
+                    center={center}
+                    zoom={zoom}
+                    defaultZoom={zoom}
                 >
                 {events.map((event) => {
                     const { location } = event
                     return (
                         <MapMarker
                             event={event}
+                            className={this.props.hoveredEvent === event ? classes.hoveredMarked : ''}
                             handleSelectEvent={this.props.handleSelectEvent}
                             handleMouseEnter={this.props.handleMouseEnter}
                             handleMouseLeave={this.props.handleMouseLeave}
@@ -71,8 +83,8 @@ class EventMap extends Component {
                             lng={location.longitude} text={location.title} />
                     )
                 })}
+                { myLocation && <MeMarker lng={myLocation.longitude} lat={myLocation.latitude} /> }
                 </GoogleMapReact>
-            }
             </div>
         )
     }

@@ -23,7 +23,7 @@ const styles = theme => ({
 class YesNoAlert extends Component {
     render() {
 
-        const { title, description, handleYes, handleNo, open, classes } = this.props
+        const { title, description, handleYes, handleNo, handleCancel, open, classes } = this.props
 
         return (
             <Dialog
@@ -46,6 +46,11 @@ class YesNoAlert extends Component {
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
+                    {   handleCancel &&
+                    <Button onClick={handleCancel}>
+                        Cancel
+                    </Button>
+                    }
                     <Button onClick={handleNo}>
                         No
                     </Button>

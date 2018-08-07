@@ -24,30 +24,43 @@ import { EventsQuery } from 'models/event/queries'
 
 const styles = theme => ({
     root: {
-        flexGrow: 1,
-		height: '100%',
+		height: 'calc(100vh - 64px)',
+		overflowY: 'hidden',
+		overflowX: 'hidden',
+	},
+	grid: {
+		height: 'calc(100vh - 64px)',
 	},
 	column: {
 		position: 'relative',
 	},
     paper: {
 		height: '100%',
-		minHeight: '92vh',
 	},
 	mapContainer: {
-		height: '95%',
+		height: '100%',
 		width: '100%',
 	},
 	fab: {
 		position: 'absolute',
-		marginBottom: '56px',
-		bottom: theme.spacing.unit * 2,
+		bottom: theme.spacing.unit * 2.5,
 		right: theme.spacing.unit * 2,
 	},
 	bottomNavigation: {
 		position: 'absolute',
 		width: '100%',
-		bottom: theme.spacing.unit * 8
+		bottom: 0
+	},
+	mobileToolbar: {
+		width: '100%',
+	},
+	mobileFooter: {
+		position: 'fixed',
+		bottom: 0,
+		left: 0,
+		right: 0,
+		paddingRight: theme.spacing.unit * 10,
+		height: 56,
 	}
 })
 
@@ -59,17 +72,33 @@ class Events extends Component {
 			hoveredEvent: null,
 			selectedEvent: null,
 			loading: false,
-			showFilters: false,
+			showSettings: false,
 			activeFilter: props.filterType,
+			windowWidth: window.innerWidth,
+			filterCount: this.getFilterCount(props),
+			mobileShowMap: localStorage.getItem('events.mobileShowMap') === 'true',
 		}
 	}
 
+	componentDidUpdate() {
+		if (this.state.windowWidth !== window.innerWidth){
+			this.setState({
+				windowWidth: window.innerWidth,
+			})
+		}
+	}
+
+	getFilterCount(props) {
+		let count = 0
+		count += (props.onlyFuture ? 1 : 0)
+
+		return count
+	}
 
 	componentWillReceiveProps(newProps) {
-		const { session } = newProps
-		if( session !== this.props.session ) {
+		if( newProps !== this.props ) {
 			this.setState({
-				activeFilter: session.id ? 'NEARBY' : 'ALL',
+				filterCount: this.getFilterCount(newProps),
 			})
 		}
 	}
@@ -97,8 +126,14 @@ class Events extends Component {
 		this.props.handleChangeFilter(value)
 	}
 
-  	render() {
+	toggleMobileShowMap() {
+		localStorage.setItem('events.mobileShowMap', !this.state.mobileShowMap)
+		this.setState({
+			mobileShowMap: !this.state.mobileShowMap
+		})
+	}
 
+  	render() {
 		if (this.props.data && this.props.data.loading) {
 			return <Loader />
 		}
@@ -107,16 +142,32 @@ class Events extends Component {
 		}
 		const { data : { events }, classes, session } = this.props
 
+		const desktop = this.state.windowWidth >= 960
+
 		const sortedEvents = events.concat().sort((a, b) => {
 			return new Date(a.startDate) >= new Date(b.startDate) || new Date(a.startTime) >= new Date(b.startTime)
 		})
+
     	return (
-			<Grid className={classes.root} container spacing={0}>
-				<Grid className={classes.column} item xs={12} md={7}>
+			<div className={classes.root}>
+				{  desktop &&
+					this.renderDesktop(session, sortedEvents, classes)
+				}
+				{  !desktop &&
+					this.renderMobile(session, sortedEvents, classes)
+				}
+			</div>
+    	)
+	}
+
+	renderDesktop(session, events, classes) {
+		return (
+			<Grid className={classes.grid} container spacing={0}>
+				<Grid className={classes.column} item md={7}>
 					<Paper className={classes.paper} elevation={4}>
-						<EventToolbar toggleShowSettings={this.props.toggleShowSettings} showSettings={this.props.showSettings}/>
+						<EventToolbar filterCount={this.state.filterCount} toggleShowSettings={this.props.toggleShowSettings} showSettings={this.props.showSettings} showSettings={this.props.showSettings}/>
 						<EventList
-							events={sortedEvents}
+							events={events}
 							session={session}
 							hoveredEvent={this.state.hoveredEvent}
 							selectedEvent={this.state.selectedEvent}
@@ -134,25 +185,19 @@ class Events extends Component {
 								<BottomNavigationAction label="My events" value="MINE" icon={<StarIcon />} />
 							</BottomNavigation>
 						}
+						{ session.id && this.renderFab(classes) }
 					</Paper>
-
-					{ session.id &&
-						<Link to='/events/new'>
-							<Button variant="fab" color="secondary" aria-label="create" className={classes.fab}>
-								<AddIcon />
-							</Button>
-						</Link>
-					}
 				</Grid>
-				<Grid item xs={false} md={5}>
+				<Grid item md={5}>
 					<EventMap events={events}
+						myLocation={this.props.myLocation}
 						hoveredEvent={this.state.hoveredEvent}
 						selectedEvent={this.state.selectedEvent}
 						handleSelectEvent={this.handleSelectEvent}
 						handleMouseEnter={this.handleMouseEnter}
 						handleMouseLeave={this.handleMouseLeave} />
 				</Grid>
-				<Grid item xs={false}>
+				<div>
 					<Switch>
 						<Route
 							path='/events/:id(\d+)/edit' render={ (props) => (
@@ -175,16 +220,118 @@ class Events extends Component {
 							)
 							} />
 					</Switch>
-				</Grid>
+				</div>
 			</Grid>
-    	)
-  	}
+		)
+	}
+
+
+	renderMobile(session, events, classes) {
+		return (
+			<Grid className={classes.grid} container spacing={0}>
+				<Grid className={classes.column} item xs={12}>
+					<Paper className={classes.paper} elevation={4}>
+						<EventToolbar
+							filterCount={this.state.filterCount}
+							showSettings={this.props.showSettings}
+							toggleShowSettings={this.props.toggleShowSettings}
+							showSettings={this.props.showSettings}
+							mobileShowMap={this.state.mobileShowMap}
+							toggleMobileShowMap={this.toggleMobileShowMap.bind(this)}/>
+						{ !this.state.mobileShowMap &&
+						<EventList
+							events={events}
+							session={session}
+							hoveredEvent={this.state.hoveredEvent}
+							selectedEvent={this.state.selectedEvent}
+							handleSelectEvent={this.handleSelectEvent}
+							handleMouseEnter={this.handleMouseEnter}
+							handleMouseLeave={this.handleMouseLeave} />}
+						{ this.state.mobileShowMap &&
+						<EventMap events={events}
+							myLocation={this.props.myLocation}
+							hoveredEvent={this.state.hoveredEvent}
+							selectedEvent={this.state.selectedEvent}
+							handleSelectEvent={this.handleSelectEvent}
+							handleMouseEnter={this.handleMouseEnter}
+							handleMouseLeave={this.handleMouseLeave} />}
+						{ session.id &&
+							<BottomNavigation
+								value={this.state.activeFilter}
+								onChange={this.handleChangeFilter.bind(this)}
+								className={`${classes.bottomNavigation} ${classes.mobileFooter}`}
+							>
+								<BottomNavigationAction label="Nearby" value="NEARBY" icon={<LocationOnIcon />} />
+								<BottomNavigationAction label="Responded to" value="GOING" icon={<FavoriteIcon />} />
+								<BottomNavigationAction label="My events" value="MINE" icon={<StarIcon />} />
+							</BottomNavigation>
+						}
+						{ session.id && this.renderFab(classes) }
+					</Paper>
+				</Grid>
+				<div>
+					<Switch>
+						<Route
+							path='/events/:id(\d+)/edit' render={ (props) => (
+								<EditEventContainer handleClose={this.handleCloseEventCard.bind(this)} {...props} />
+							)}
+						/>
+						<Route
+							path='/events/:id(\d+)' render={ (props) => (
+									<EventDialogContainer
+										handleClose={this.handleCloseEventCard.bind(this)}
+										selectedEvent={this.state.selectedEvent}
+										{...props} />
+								)
+							} />
+						<Route
+							path='/events/new' render={(props) => (
+								<CreateEvent
+									handleClose={this.handleCloseEventCard.bind(this)}
+									{...props} />
+							)
+							} />
+					</Switch>
+				</div>
+			</Grid>
+		)
+	}
+
+	renderFab(classes) {
+		return (
+
+			<Link to='/events/new'>
+				<Button variant="fab" color="secondary" aria-label="create" className={classes.fab}>
+					<AddIcon />
+				</Button>
+			</Link>
+
+		)
+	}
 }
 
 
 export default withRouter(withStyles(styles)(graphql(
     EventsQuery,
     {
-        options: ({ filterType, locationId, onlyFuture, proximity, first, skip }) => ( { variables: { filterType, locationId, onlyFuture, proximity, first, skip }})
+        options: ({
+        	filterType,
+        	longitude,
+        	latitude,
+        	onlyFuture,
+        	proximity,
+        	first,
+        	skip
+        }) => ({
+        	variables: {
+        		filterType,
+        		longitude,
+        		latitude,
+        		onlyFuture,
+        		proximity,
+        		first,
+        		skip
+        	}
+        })
     }
 )(Events)))

@@ -41,7 +41,7 @@ class Navigation extends React.Component {
             <div>
                 <div className={classes.toolbar} />
                 <List>
-                    <Link className={classes.link} to="/" onClick={this.props.handleDrawerToggle}>
+                    <Link className={classes.link} to="/" onClick={this.props.handleCloseDrawer}>
                         <ListItem button>
                             <ListItemIcon>
                                 <HomeIcon />
@@ -49,7 +49,7 @@ class Navigation extends React.Component {
                             <ListItemText primary="Home" />
                         </ListItem>
                     </Link>
-                    <Link className={classes.link} to="/events" onClick={this.props.handleDrawerToggle}>
+                    <Link className={classes.link} to="/events" onClick={this.props.handleCloseDrawer}>
                         <ListItem button>
                             <ListItemIcon>
                                 <EventIcon />
@@ -57,7 +57,7 @@ class Navigation extends React.Component {
                             <ListItemText primary="Events" />
                         </ListItem>
                     </Link>
-                    <Link className={classes.link} to="/conversations" onClick={this.props.handleDrawerToggle}>
+                    <Link className={classes.link} to="/conversations" onClick={this.props.handleCloseDrawer}>
                         <ListItem button>
                             <ListItemIcon>
                                 <MessageIcon />
@@ -65,7 +65,7 @@ class Navigation extends React.Component {
                             <ListItemText primary="Conversations" />
                         </ListItem>
                     </Link>
-                    <Link className={classes.link} to="/profile" onClick={this.props.handleDrawerToggle}>
+                    <Link className={classes.link} to="/profile" onClick={this.props.handleCloseDrawer}>
                         <ListItem button>
                             <ListItemIcon>
                                 <AccountCircleIcon />
@@ -76,6 +76,7 @@ class Navigation extends React.Component {
                 </List>
             </div>
         )
+        console.log(this.props.openMobile)
         return (
             <div>
                 <Hidden mdUp>
@@ -83,7 +84,7 @@ class Navigation extends React.Component {
                         variant="temporary"
                         anchor={theme.direction === 'rtl' ? 'right' : 'left'}
                         open={this.props.openMobile}
-                        onClose={this.props.handleDrawerToggle}
+                        onClose={this.props.handleCloseDrawer}
                         classes={{
                             paper: classes.drawerPaper,
                         }}
@@ -91,9 +92,8 @@ class Navigation extends React.Component {
                             keepMounted: true, // Better open performance on mobile.
                         }}
                     >
-                        <IconButton className={classes.closeButton} onClick={this.props.handleDrawerToggle}>
+                        <IconButton className={classes.closeButton} onClick={this.props.handleCloseDrawer}>
                             <ArrowBackIcon />
-
                         </IconButton>
                         {drawer}
                     </Drawer>

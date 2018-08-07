@@ -25,8 +25,8 @@ const styles = theme => ({
         marginLeft: theme.spacing.unit * 2,
     },
     saveButton: {
-        float: 'right',
-        marginTop: theme.spacing.unit * 4,
+        marginTop: theme.spacing.unit * 2,
+        marginBottom: theme.spacing.unit * 2,
     },
     success: {
         backgroundColor: theme.palette.primary.main,

@@ -11,6 +11,7 @@ import withTheme from 'utilities/withTheme'
 import { graphql } from 'react-apollo'
 
 import { MeQuery } from 'models/user/queries'
+import Loader from './Loader/Loader'
 
 const styles = (theme) => {
     return {
@@ -33,9 +34,39 @@ const styles = (theme) => {
 class App extends Component {
     state = {
         openMobile: false,
+        myLocation: null,
+        width: null,
+        height: null,
     }
 
-    handleDrawerToggle() {
+    componentWillMount() {
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition((position) => {
+                const { latitude, longitude } = position.coords
+                this.setState({
+                    myLocation: {
+                        latitude,
+                        longitude
+                    }
+                })
+            })
+        }
+        document.body.style.overflow = 'hidden'
+        window.addEventListener('resize', this.updateDimensions.bind(this))
+    }
+
+    updateDimensions() {
+        this.setState({
+            width: window.innerWidth,
+            height: window.innerHeight,
+        })
+    }
+
+    handleCloseDrawer() {
+        this.setState({ openMobile: false })
+    }
+
+    handleToggleDrawer() {
         this.setState({ openMobile: !this.state.openMobile })
     }
 
@@ -45,16 +76,17 @@ class App extends Component {
         session = session ? JSON.parse(session) : {}
 
         if ( loading ) {
-            return <div>Loading</div>
+            return <Loader />
         }
+
 		return (
 			<div className={classes.root}>
-				<Navigation openMobile={this.state.openMobile} toggleMobile={this.state.openMobile} handleDrawerToggle={this.handleDrawerToggle.bind(this)} />
-				<AppBar session={session} handleToggle={this.handleDrawerToggle.bind(this)} />
+				<Navigation openMobile={this.state.openMobile} toggleMobile={this.state.openMobile} handleCloseDrawer={this.handleCloseDrawer.bind(this)} />
+				<AppBar session={session} handleToggle={this.handleToggleDrawer.bind(this)} />
 				<main className={classes.content}>
                     <div className={classes.toolbar}></div>
                     <Switch>
-                        <Route path='/events' render={(props) => <EventPage me={me} session={session} {...props} />} />
+                        <Route path='/events' render={(props) => <EventPage me={me} session={session} myLocation={this.state.myLocation} {...props} />} />
                         <Route path='/profile' render={(props) => <ProfilePage user={me} session={session} {...props} />} />
                         <Route path='/login' component={Login} />
                         <Route path='/register' component={Register} />

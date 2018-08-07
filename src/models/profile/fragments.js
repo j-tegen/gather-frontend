@@ -23,3 +23,11 @@ export const profileFragment = gql`
     ${friendshipFragment}
     ${locationFragment}
 `
+
+export const basicProfileFragment = gql `
+    fragment basicProfileFields on FriendshipType {
+        id
+        firstName
+        lastName
+    }
+`

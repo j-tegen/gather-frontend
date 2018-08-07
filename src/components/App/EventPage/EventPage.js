@@ -37,8 +37,12 @@ class EventPage extends Component {
         this.saveFilterCookie()
     }
 
-    componentDidUpdate() {
-        this.saveFilterCookie()
+
+
+    componentDidUpdate(newState) {
+        if (this.state !== newState) {
+            this.saveFilterCookie()
+        }
     }
 
     saveFilterCookie() {
@@ -88,14 +92,13 @@ class EventPage extends Component {
             session,
             me: {
                 profile: {
-                    location: {
-                        id: locationId = null
-                    } = {}
+                    location
                 } = {}
-            } = {}
+            } = {},
+            myLocation,
         } = this.props
 
-
+        const { longitude = null, latitude = null } = (myLocation ? myLocation : location)
 
         return (
             <div className={this.props.classes.root}>
@@ -103,13 +106,16 @@ class EventPage extends Component {
                     session={session}
                     showSettings={showSettings}
                     toggleShowSettings={this.toggleShowSettings.bind(this)}
-                    filterType={locationId ? this.state.filterType : 'ALL'}
-                    locationId={locationId}
+                    filterType={this.state.filterType}
+                    latitude={latitude}
+                    longitude={longitude}
                     onlyFuture={this.state.onlyFuture}
                     proximity={this.state.proximity}
                     handleChangeFilter={this.changeFilter.bind(this)}
                     first={first}
-                    skip={skip} />
+                    skip={skip}
+                    myLocation={myLocation}
+                    filterCount={this.state.filterCount} />
                 <EventSettings
                     open={showSettings}
                     toggleOpen={this.toggleShowSettings.bind(this)}

@@ -19,18 +19,10 @@ export const formatShortAddress = (city, street) => {
 }
 
 export const getBounds = (locations) => {
-    const north = Math.max.apply(Math, locations.map(function (l) {
-        return l.latitude
-    }))
-    const south = Math.min.apply(Math, locations.map(function (l) {
-        return l.latitude;
-    }))
-    const west = Math.min.apply(Math, locations.map(function (l) {
-        return l.longitude;
-    }))
-    const east = Math.max.apply(Math, locations.map(function (l) {
-        return l.longitude;
-    }))
+    const north = Math.max.apply(Math, locations.filter(l => l).map(l => l.latitude))
+    const south = Math.min.apply(Math, locations.filter(l => l).map(l => l.latitude))
+    const west = Math.min.apply(Math, locations.filter(l => l).map(l => l.longitude))
+    const east = Math.max.apply(Math, locations.filter(l => l).map(l => l.longitude))
     return {
         nw: {
             lat: north,

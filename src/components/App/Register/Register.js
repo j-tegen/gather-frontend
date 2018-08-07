@@ -235,7 +235,7 @@ class Register extends Component {
                             </Button>
                         }
                         { activeStep === steps.length - 1 &&
-                            <LoadingButton text="Save" color="primary" type="submit" variant="contained" handleClick={this.handleSubmit} />
+                            <LoadingButton loading={this.state.loading} text="Save" color="primary" type="submit" variant="contained" handleClick={this.handleSubmit} />
                         }
                     </DialogActions>
                 </Dialog>
