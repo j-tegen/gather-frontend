@@ -4,17 +4,16 @@ import SearchBar from './SearchBar/SearchBar'
 
 import { ProfilesQuery } from 'models/profile/queries'
 import { MeQuery } from 'models/user/queries'
-import { AddFriendMutation } from 'models/friendship/mutations'
+import { AddFriendshipMutation } from 'models/friendship/mutations'
 
 class FriendshipSearchBar extends Component {
     handleAddFriendRequest = async (id) => {
          try {
-            await this.props.AddFriendMutation({
+            await this.props.AddFriendshipMutation({
                 variables: {
                     profileId: id,
                 },
-                update: (store, { data: { addFriend: { friend } } }) => {
-
+                update: (store, { data: { addFriend: { friendship } } }) => {
                     const { me } = store.readQuery({
                         query: MeQuery,
                     })
@@ -24,7 +23,7 @@ class FriendshipSearchBar extends Component {
                         ...me,
                         profile: {
                             ...profile,
-                            friends: [...profile.friends, friend]
+                            friends: [...profile.friends, friendship]
                         }
                     }
                     store.writeQuery({
@@ -50,7 +49,6 @@ class FriendshipSearchBar extends Component {
             })
         }
 
-
         return (
             <SearchBar loading={data.loading} handleSearch={handleSearch} handleAdd={this.handleAddFriendRequest.bind(this)} searchHits={profiles}/>
         )
@@ -61,5 +59,5 @@ export default compose(
     graphql(
         ProfilesQuery,
         { options: ({search, first, skip}) => ({variables: {search, first, skip}})}),
-    graphql(AddFriendMutation, { name: 'AddFriendMutation' }),
+    graphql(AddFriendshipMutation, { name: 'AddFriendshipMutation' }),
 )(FriendshipSearchBar)

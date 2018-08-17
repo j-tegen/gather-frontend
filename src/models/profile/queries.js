@@ -9,3 +9,12 @@ export const ProfilesQuery = gql`
     }
     ${profileFragment}
 `
+
+export const ProfileQuery = gql`
+    query ProfileQuery($id: Int!) {
+        profile(id: $id){
+            ...profileFields
+        }
+    }
+    ${profileFragment}
+`

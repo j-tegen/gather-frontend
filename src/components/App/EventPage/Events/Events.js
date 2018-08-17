@@ -12,7 +12,6 @@ import StarIcon from '@material-ui/icons/Star'
 import FavoriteIcon from '@material-ui/icons/Favorite'
 import LocationOnIcon from '@material-ui/icons/LocationOn'
 
-
 import EventToolbar from './EventToolbar/EventToolbar'
 import EventList from './EventList/EventList'
 import EventMap from './EventMap/EventMap'
@@ -55,10 +54,8 @@ const styles = theme => ({
 		width: '100%',
 	},
 	mobileFooter: {
-		position: 'fixed',
+		position: 'absolute',
 		bottom: 0,
-		left: 0,
-		right: 0,
 		paddingRight: theme.spacing.unit * 10,
 		height: 56,
 	}
@@ -135,7 +132,7 @@ class Events extends Component {
 
   	render() {
 		if (this.props.data && this.props.data.loading) {
-			return <Loader />
+			return <Loader fullscreen/>
 		}
 		if (this.props.data && this.props.data.error) {
 			return <div>Error...</div>
@@ -165,7 +162,7 @@ class Events extends Component {
 			<Grid className={classes.grid} container spacing={0}>
 				<Grid className={classes.column} item md={7}>
 					<Paper className={classes.paper} elevation={4}>
-						<EventToolbar filterCount={this.state.filterCount} toggleShowSettings={this.props.toggleShowSettings} showSettings={this.props.showSettings} showSettings={this.props.showSettings}/>
+						<EventToolbar filterCount={this.state.filterCount} toggleShowSettings={this.props.toggleShowSettings} showSettings={this.props.showSettings}/>
 						<EventList
 							events={events}
 							session={session}
@@ -235,7 +232,6 @@ class Events extends Component {
 							filterCount={this.state.filterCount}
 							showSettings={this.props.showSettings}
 							toggleShowSettings={this.props.toggleShowSettings}
-							showSettings={this.props.showSettings}
 							mobileShowMap={this.state.mobileShowMap}
 							toggleMobileShowMap={this.toggleMobileShowMap.bind(this)}/>
 						{ !this.state.mobileShowMap &&

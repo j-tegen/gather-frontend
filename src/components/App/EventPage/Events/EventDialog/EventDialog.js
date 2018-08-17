@@ -94,7 +94,7 @@ class EventDialog extends Component {
                     />
                 }
                 {tabIndex === 1 && <EventFeedTab event={event} />}
-                {tabIndex === 2 && <EventParticipantsTab event={event} />}
+                {tabIndex === 2 && <EventParticipantsTab participants={event.participants} fullScreen={this.props.fullScreen} />}
             </Dialog>
         )
     }

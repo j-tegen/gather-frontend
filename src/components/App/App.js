@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import { Switch, Route } from 'react-router-dom'
 import { withStyles } from '@material-ui/core/styles'
 import EventPage from './EventPage/EventPage'
+import HomePage from './HomePage/HomePage'
 import ProfilePage from './ProfilePage/ProfilePage'
 import AppBar from './AppBar/AppBar'
 import Login from './Login/Login'
@@ -27,7 +28,9 @@ const styles = (theme) => {
             display: 'flex',
             width: '100%',
         },
-        toolbar: theme.mixins.toolbar,
+        toolbar: {
+            ...theme.mixins.toolbar,
+        },
     }
 }
 
@@ -76,9 +79,8 @@ class App extends Component {
         session = session ? JSON.parse(session) : {}
 
         if ( loading ) {
-            return <Loader />
+            return <Loader fullscreen />
         }
-
 		return (
 			<div className={classes.root}>
 				<Navigation openMobile={this.state.openMobile} toggleMobile={this.state.openMobile} handleCloseDrawer={this.handleCloseDrawer.bind(this)} />
@@ -86,8 +88,12 @@ class App extends Component {
 				<main className={classes.content}>
                     <div className={classes.toolbar}></div>
                     <Switch>
+                        <Route path='/' exact render={(props) => <HomePage user={me} session={session} {...props} />} />
                         <Route path='/events' render={(props) => <EventPage me={me} session={session} myLocation={this.state.myLocation} {...props} />} />
-                        <Route path='/profile' render={(props) => <ProfilePage user={me} session={session} {...props} />} />
+                        <Route path='/profile/:id(\d+)' render={ (props) => (
+								<ProfilePage {...props} />
+							)}
+						/>
                         <Route path='/login' component={Login} />
                         <Route path='/register' component={Register} />
                     </Switch>

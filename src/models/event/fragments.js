@@ -6,8 +6,40 @@ import tagFragment from '../tag/fragments'
 import { profileFragment } from '../profile/fragments'
 import { userFragment } from '../user/fragments'
 
+export const eventsFragment = gql `
+    fragment eventsFields on EventType {
+        id
+        title
+        description
+        startDate
+        startTime
+        endDate
+        endTime
+        minParticipants
+        maxParticipants
+        location {
+            ...locationFields
+        }
+        organizer {
+            ...userFields
+            profile {
+                ...profileFields
+            }
+        }
+        participants {
+            ...participantFields
+            user {
+                ...userFields
+            }
+        }
+    }
+    ${locationFragment}
+    ${userFragment}
+    ${profileFragment}
+    ${participantFragment}
+`
 
-const eventfragment = gql`
+export const eventFragment = gql`
     fragment eventFields on EventType {
         id
         title
@@ -32,6 +64,9 @@ const eventfragment = gql`
             ...participantFields
             user {
                 ...userFields
+                profile {
+                    ...profileFields
+                }
             }
         }
         posts {
@@ -52,11 +87,3 @@ const eventfragment = gql`
     ${tagFragment}
 `
 
-export const basicEventFragment = gql`
-    fragment basicEventFields on EventType {
-        id
-        title
-    }
-`
-
-export default eventfragment

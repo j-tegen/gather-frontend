@@ -1,5 +1,5 @@
 import gql from 'graphql-tag'
-import eventFragment from './fragments'
+import { eventFragment } from './fragments'
 
 export const CreateEventMutation = gql `
     mutation CreateEventMutation($eventData: EventInput!, $locationData: LocationInput!) {

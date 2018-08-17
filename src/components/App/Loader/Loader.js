@@ -9,18 +9,26 @@ const styles = theme => ({
 		position: 'relative',
 		margin: 'auto',
 	},
-    progress: {
+	progress: {
 		position: 'absolute',
 		height: '100px',
 		top: '40%',
 		marginTop: '-50px',
-    },
+	},
+	fullscreen: {
+		position: 'fixed',
+		top: 0,
+		bottom: 0,
+		left: 0,
+		right: 0,
+	}
 })
 
 function Loader(props) {
-    const { classes } = props;
+		const { classes, fullscreen } = props;
+		const rootClasses = `${classes.root} ${fullscreen ? classes.fullscreen : ''}`
     return (
-		<div className={classes.root}>
+		<div className={rootClasses}>
         	<CircularProgress className={classes.progress} />
 		</div>
     )

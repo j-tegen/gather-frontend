@@ -1,4 +1,5 @@
 import gql from 'graphql-tag'
+import locationFragment from '../location/fragments'
 
 
 export const friendshipFragment = gql`
@@ -10,6 +11,10 @@ export const friendshipFragment = gql`
             profilePicture
             firstName
             lastName
+            location {
+                ...locationFields
+            }
         }
     }
+    ${locationFragment}
 `

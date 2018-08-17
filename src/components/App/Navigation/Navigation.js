@@ -76,7 +76,6 @@ class Navigation extends React.Component {
                 </List>
             </div>
         )
-        console.log(this.props.openMobile)
         return (
             <div>
                 <Hidden mdUp>

@@ -35,8 +35,10 @@ class EventMap extends Component {
 
     render () {
         const { events, classes, myLocation } = this.props
+
         let center = { lat: 40, lng: 8 }
         let zoom = 2
+
         const uniqueLocations = [myLocation,...new Set(events.map(event => event.location.googleId))]
 
         if (uniqueLocations.length > 1) {
@@ -63,10 +65,8 @@ class EventMap extends Component {
             <div id="event-map" className={classes.mapContainer}>
                 <GoogleMapReact
                     bootstrapURLKeys={{key: googleMapsKey}}
-                    defaultCenter={center}
                     center={center}
                     zoom={zoom}
-                    defaultZoom={zoom}
                 >
                 {events.map((event) => {
                     const { location } = event

@@ -15,6 +15,7 @@ import MenuItem from '@material-ui/core/MenuItem'
 const styles = theme => ({
     appBar: {
         zIndex: theme.zIndex.drawer + 1,
+        maxWidth: '100vw',
     },
     navIconHide: {
         [theme.breakpoints.up('md')]: {
